@@ -248,8 +248,26 @@ async function generateHomepageHtml() {
       avatarPath: config.branding?.avatarPath || "/photos/avatar.png",
       primaryColor: config.branding?.primaryColor || "#4ade80",
       secondaryColor: config.branding?.secondaryColor || "#3b82f6",
-      language: config.branding?.language || "en"
+      language: config.branding?.language || "en",
+      headerTheme: config.branding?.headerTheme || "light",
+      headerBackgroundColor: config.branding?.headerBackgroundColor || "#e7e7e7",
+      headerTextColor: config.branding?.headerTextColor || "#1e1e1e",
+      headerOpacity: config.branding?.headerOpacity ?? 1,
+      headerBlur: config.branding?.headerBlur ?? 0,
+      headerBorderColor: config.branding?.headerBorderColor || "#1e1e1e",
+      headerBorderOpacity: config.branding?.headerBorderOpacity ?? 0.2,
+      headerDropdownTheme: config.branding?.headerDropdownTheme || "light",
+      photoGridTheme: config.branding?.photoGridTheme || "dark"
     };
+
+    // Inject custom CSS if present
+    const customCSS = config.branding?.customCSS || "";
+    if (customCSS) {
+      html = html.replace(
+        '</head>',
+        `<style id="custom-css">${customCSS}</style>\n  </head>`
+      );
+    }
 
     // Build initial data object
     const initialData = {

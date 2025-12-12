@@ -35,6 +35,16 @@ export interface BrandingConfig {
   photoLicense?: string;
   language?: string;
   enableAnimatedBackground?: boolean;
+  headerTheme?: 'light' | 'dark' | 'custom';
+  headerBackgroundColor?: string;
+  headerTextColor?: string;
+  headerOpacity?: number;
+  headerBlur?: number;
+  headerBorderColor?: string;
+  headerBorderOpacity?: number;
+  headerDropdownTheme?: 'light' | 'dark';
+  photoGridTheme?: 'light' | 'dark';
+  customCSS?: string;
 }
 
 export interface ImageOptimizationSettings {

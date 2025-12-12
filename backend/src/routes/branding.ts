@@ -67,6 +67,16 @@ interface BrandingConfig {
   photoLicense?: string;
   language?: string;
   enableAnimatedBackground?: boolean;
+  headerTheme?: 'light' | 'dark' | 'custom';
+  headerBackgroundColor?: string;
+  headerTextColor?: string;
+  headerOpacity?: number;
+  headerBlur?: number;
+  headerBorderColor?: string;
+  headerBorderOpacity?: number;
+  headerDropdownTheme?: 'light' | 'dark';
+  photoGridTheme?: 'light' | 'dark';
+  customCSS?: string;
 }
 
 // Get current branding configuration
@@ -89,6 +99,16 @@ router.get("/", (req: Request, res: Response) => {
       photoLicense: branding.photoLicense || "cc-by",
       language: branding.language || "en",
       enableAnimatedBackground: branding.enableAnimatedBackground ?? true,
+      headerTheme: branding.headerTheme || "light",
+      headerBackgroundColor: branding.headerBackgroundColor || "#e7e7e7",
+      headerTextColor: branding.headerTextColor || "#1e1e1e",
+      headerOpacity: branding.headerOpacity ?? 1,
+      headerBlur: branding.headerBlur ?? 0,
+      headerBorderColor: branding.headerBorderColor || "#1e1e1e",
+      headerBorderOpacity: branding.headerBorderOpacity ?? 0.2,
+      headerDropdownTheme: branding.headerDropdownTheme || "light",
+      photoGridTheme: branding.photoGridTheme || "dark",
+      customCSS: branding.customCSS || "",
     };
 
     res.json(brandingConfig);
@@ -122,6 +142,16 @@ router.put("/", requireManager, (req: Request, res: Response) => {
       "photoLicense",
       "language",
       "enableAnimatedBackground",
+      "headerTheme",
+      "headerBackgroundColor",
+      "headerTextColor",
+      "headerOpacity",
+      "headerBlur",
+      "headerBorderColor",
+      "headerBorderOpacity",
+      "headerDropdownTheme",
+      "photoGridTheme",
+      "customCSS",
     ];
     for (const [key, value] of Object.entries(updates)) {
       if (!validFields.includes(key)) {
@@ -129,10 +159,28 @@ router.put("/", requireManager, (req: Request, res: Response) => {
         return;
       }
 
-      // shuffleHomepage and enableAnimatedBackground are booleans, all others are strings
+      // Type validation based on field
       if (key === "shuffleHomepage" || key === "enableAnimatedBackground") {
         if (typeof value !== "boolean") {
           res.status(400).json({ error: `Field ${key} must be a boolean` });
+          return;
+        }
+      } else if (key === "headerOpacity") {
+        if (typeof value !== "number" || value < 0 || value > 1) {
+          res.status(400).json({ error: "Header opacity must be a number between 0 and 1" });
+          return;
+        }
+      } else if (key === "headerBlur") {
+        // Handle backward compatibility: convert old boolean values to numbers
+        if (typeof value === "boolean") {
+          updates.headerBlur = value ? 10 : 0; // true -> 10px, false -> 0px
+        } else if (typeof value !== "number" || value < 0 || value > 20) {
+          res.status(400).json({ error: "Header blur must be a number between 0 and 20" });
+          return;
+        }
+      } else if (key === "headerBorderOpacity") {
+        if (typeof value !== "number" || value < 0 || value > 1) {
+          res.status(400).json({ error: "Header border opacity must be a number between 0 and 1" });
           return;
         }
       } else {
@@ -148,6 +196,38 @@ router.put("/", requireManager, (req: Request, res: Response) => {
             res
               .status(400)
               .json({ error: `Field ${key} is too long (max 10 characters)` });
+            return;
+          }
+        } else if (key === "headerTheme") {
+          // headerTheme must be 'light', 'dark', or 'custom'
+          if (value !== "light" && value !== "dark" && value !== "custom") {
+            res
+              .status(400)
+              .json({ error: "Header theme must be 'light', 'dark', or 'custom'" });
+            return;
+          }
+        } else if (key === "headerDropdownTheme" || key === "photoGridTheme") {
+          // Must be 'light' or 'dark'
+          if (value !== "light" && value !== "dark") {
+            res
+              .status(400)
+              .json({ error: `${key} must be 'light' or 'dark'` });
+            return;
+          }
+        } else if (key === "headerBackgroundColor" || key === "headerTextColor" || key === "headerBorderColor") {
+          // Validate hex color format
+          if (!/^#[0-9A-Fa-f]{6}$/.test(value)) {
+            res
+              .status(400)
+              .json({ error: `${key} must be a valid hex color (e.g., #FF0000)` });
+            return;
+          }
+        } else if (key === "customCSS") {
+          // Custom CSS has a larger limit (50KB)
+          if (value.length > 50000) {
+            res
+              .status(400)
+              .json({ error: "Custom CSS is too long (max 50KB)" });
             return;
           }
         } else if (value.length > 500) {

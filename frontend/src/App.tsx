@@ -224,6 +224,15 @@ function App() {
   const [avatarCacheBust, setAvatarCacheBust] = useState(Date.now());
   const [primaryColor, setPrimaryColor] = useState(runtimeBranding?.primaryColor || "#4ade80");
   const [secondaryColor, setSecondaryColor] = useState(runtimeBranding?.secondaryColor || "#3b82f6");
+  const [headerTheme, setHeaderTheme] = useState<'light' | 'dark' | 'custom'>(runtimeBranding?.headerTheme || "light");
+  const [headerBackgroundColor, setHeaderBackgroundColor] = useState(runtimeBranding?.headerBackgroundColor || "#e7e7e7");
+  const [headerTextColor, setHeaderTextColor] = useState(runtimeBranding?.headerTextColor || "#1e1e1e");
+  const [headerOpacity, setHeaderOpacity] = useState<number>(runtimeBranding?.headerOpacity ?? 1);
+  const [headerBlur, setHeaderBlur] = useState<number>(runtimeBranding?.headerBlur ?? 0);
+  const [headerBorderColor, setHeaderBorderColor] = useState(runtimeBranding?.headerBorderColor || "#1e1e1e");
+  const [headerBorderOpacity, setHeaderBorderOpacity] = useState<number>(runtimeBranding?.headerBorderOpacity ?? 0.2);
+  const [headerDropdownTheme, setHeaderDropdownTheme] = useState<'light' | 'dark'>(runtimeBranding?.headerDropdownTheme || "light");
+  const [photoGridTheme, setPhotoGridTheme] = useState<'light' | 'dark'>(runtimeBranding?.photoGridTheme || "dark");
   const [errorState, setErrorState] = useState<string | null>(null);
 
   // Set language immediately if provided in runtime branding
@@ -282,6 +291,71 @@ function App() {
       secondaryColor
     );
   }, [primaryColor, secondaryColor]);
+
+  // Apply header theme to document for CSS styling
+  useEffect(() => {
+    document.documentElement.setAttribute("data-header-theme", headerTheme);
+    document.documentElement.setAttribute("data-photo-grid-theme", photoGridTheme);
+    document.documentElement.setAttribute("data-header-dropdown-theme", headerDropdownTheme);
+    // Apply custom colors as CSS variables when custom theme is selected
+    if (headerTheme === "custom") {
+      document.documentElement.style.setProperty("--header-bg-color", headerBackgroundColor);
+      document.documentElement.style.setProperty("--header-text-color", headerTextColor);
+      document.documentElement.style.setProperty("--header-opacity", String(headerOpacity));
+      document.documentElement.style.setProperty("--header-blur", String(headerBlur));
+      document.documentElement.style.setProperty("--header-border-color", headerBorderColor);
+      document.documentElement.style.setProperty("--header-border-opacity", String(headerBorderOpacity));
+    }
+  }, [headerTheme, headerBackgroundColor, headerTextColor, headerOpacity, headerBlur, headerBorderColor, headerBorderOpacity, headerDropdownTheme, photoGridTheme]);
+
+  // Listen for live preview of header theme changes from settings
+  useEffect(() => {
+    const handleHeaderThemePreview = (event: CustomEvent<{
+      headerTheme?: 'light' | 'dark' | 'custom';
+      headerBackgroundColor?: string;
+      headerTextColor?: string;
+      headerOpacity?: number;
+      headerBlur?: number;
+      headerBorderColor?: string;
+      headerBorderOpacity?: number;
+      headerDropdownTheme?: 'light' | 'dark';
+      photoGridTheme?: 'light' | 'dark';
+    }>) => {
+      const { headerTheme: newTheme, headerBackgroundColor: newBgColor, headerTextColor: newTextColor, headerOpacity: newOpacity, headerBlur: newBlur, headerBorderColor: newBorderColor, headerBorderOpacity: newBorderOpacity, headerDropdownTheme: newDropdownTheme, photoGridTheme: newPhotoGridTheme } = event.detail;
+      if (newTheme !== undefined) {
+        setHeaderTheme(newTheme);
+      }
+      if (newBgColor !== undefined) {
+        setHeaderBackgroundColor(newBgColor);
+      }
+      if (newTextColor !== undefined) {
+        setHeaderTextColor(newTextColor);
+      }
+      if (newOpacity !== undefined) {
+        setHeaderOpacity(newOpacity);
+      }
+      if (newBlur !== undefined) {
+        setHeaderBlur(newBlur);
+      }
+      if (newBorderColor !== undefined) {
+        setHeaderBorderColor(newBorderColor);
+      }
+      if (newBorderOpacity !== undefined) {
+        setHeaderBorderOpacity(newBorderOpacity);
+      }
+      if (newDropdownTheme !== undefined) {
+        setHeaderDropdownTheme(newDropdownTheme);
+      }
+      if (newPhotoGridTheme !== undefined) {
+        setPhotoGridTheme(newPhotoGridTheme);
+      }
+    };
+
+    window.addEventListener('header-theme-preview', handleHeaderThemePreview as EventListener);
+    return () => {
+      window.removeEventListener('header-theme-preview', handleHeaderThemePreview as EventListener);
+    };
+  }, []);
 
   // Hide footer on navigation (except homepage)
   useEffect(() => {
@@ -346,7 +420,16 @@ function App() {
           avatarPath: runtimeBranding?.avatarPath || "/photos/avatar.png",
           primaryColor: runtimeBranding?.primaryColor || "#4ade80",
           secondaryColor: runtimeBranding?.secondaryColor || "#3b82f6",
-          language: runtimeBranding?.language || "en"
+          language: runtimeBranding?.language || "en",
+          headerTheme: runtimeBranding?.headerTheme || "light",
+          headerBackgroundColor: runtimeBranding?.headerBackgroundColor || "#e7e7e7",
+          headerTextColor: runtimeBranding?.headerTextColor || "#1e1e1e",
+          headerOpacity: runtimeBranding?.headerOpacity ?? 1,
+          headerBlur: runtimeBranding?.headerBlur ?? 0,
+          headerBorderColor: runtimeBranding?.headerBorderColor || "#1e1e1e",
+          headerBorderOpacity: runtimeBranding?.headerBorderOpacity ?? 0.2,
+          headerDropdownTheme: runtimeBranding?.headerDropdownTheme || "light",
+          photoGridTheme: runtimeBranding?.photoGridTheme || "dark"
         };
         
         // Clear remaining SSR data after using it (homepage was already cleared by ContentGrid)
@@ -439,6 +522,15 @@ function App() {
       
       setPrimaryColor(brandingData.primaryColor || "#4ade80");
       setSecondaryColor(brandingData.secondaryColor || "#3b82f6");
+      setHeaderTheme(brandingData.headerTheme || "light");
+      setHeaderBackgroundColor(brandingData.headerBackgroundColor || "#e7e7e7");
+      setHeaderTextColor(brandingData.headerTextColor || "#1e1e1e");
+      setHeaderOpacity(brandingData.headerOpacity ?? 1);
+      setHeaderBlur(brandingData.headerBlur ?? 0);
+      setHeaderBorderColor(brandingData.headerBorderColor || "#1e1e1e");
+      setHeaderBorderOpacity(brandingData.headerBorderOpacity ?? 0.2);
+      setHeaderDropdownTheme(brandingData.headerDropdownTheme || "light");
+      setPhotoGridTheme(brandingData.photoGridTheme || "dark");
 
       // Update language from branding config if available
       if (brandingData.language && i18n.language !== brandingData.language) {

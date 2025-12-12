@@ -79,7 +79,7 @@ const GeneralSection: React.FC<GeneralSectionProps> = ({
   const [isInitialized, setIsInitialized] = useState(false);
   const avatarFileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleBrandingChange = (field: keyof BrandingConfig, value: string | boolean) => {
+  const handleBrandingChange = (field: keyof BrandingConfig, value: string | boolean | number) => {
     setBranding({
       ...branding,
       [field]: value,
@@ -692,7 +692,7 @@ const GeneralSection: React.FC<GeneralSectionProps> = ({
                     enableAnimatedBackground: newValue
                   };
                   setBranding(updatedBranding);
-                  
+
                   // Save to backend
                   setSavingBrandingSection('Animated Background');
                   try {
@@ -731,6 +731,619 @@ const GeneralSection: React.FC<GeneralSectionProps> = ({
                 {branding.enableAnimatedBackground ?? true ? t('common.enabled') : t('common.disabled')}
               </span>
             </label>
+          </div>
+
+          <div className="branding-group">
+            <label className="branding-label" style={{ display: 'block', marginBottom: '0.5rem' }}>
+              {t('general.headerTheme')}
+            </label>
+            <p className="branding-description">
+              {t('general.headerThemeDescription')}
+            </p>
+            <CustomDropdown
+              value={branding.headerTheme || 'light'}
+              options={[
+                { value: 'light', label: t('general.headerThemeLight') },
+                { value: 'dark', label: t('general.headerThemeDark') },
+                { value: 'custom', label: t('general.headerThemeCustom') }
+              ]}
+              openUpward={true}
+              onChange={async (newValue) => {
+                handleBrandingChange("headerTheme", newValue);
+
+                // Dispatch preview event immediately for live preview
+                window.dispatchEvent(new CustomEvent('header-theme-preview', {
+                  detail: { headerTheme: newValue as 'light' | 'dark' | 'custom' }
+                }));
+
+                // Auto-save immediately
+                setSavingBrandingSection('Header Theme');
+                try {
+                  const updatedBranding = {
+                    ...branding,
+                    headerTheme: newValue as 'light' | 'dark' | 'custom'
+                  };
+
+                  const res = await fetch(`${API_URL}/api/branding`, {
+                    method: 'PUT',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify(updatedBranding),
+                  });
+
+                  if (res.ok) {
+                    setMessage({ type: 'success', text: t('general.headerThemeSaved') });
+                    trackBrandingUpdate(['headerTheme']);
+                    setOriginalBranding(updatedBranding);
+                  } else {
+                    const errorData = await res.json().catch(() => ({ error: t('common.unknownError') }));
+                    setMessage({ type: 'error', text: errorData.error || t('general.failedToSaveHeaderTheme') });
+                    // Revert on error
+                    setBranding(branding);
+                    // Revert preview
+                    window.dispatchEvent(new CustomEvent('header-theme-preview', {
+                      detail: { headerTheme: branding.headerTheme || 'light' }
+                    }));
+                  }
+                } catch (err) {
+                  const errorMessage = err instanceof Error ? err.message : t('general.errorSavingHeaderTheme');
+                  setMessage({ type: 'error', text: errorMessage });
+                  // Revert on error
+                  setBranding(branding);
+                  // Revert preview
+                  window.dispatchEvent(new CustomEvent('header-theme-preview', {
+                    detail: { headerTheme: branding.headerTheme || 'light' }
+                  }));
+                } finally {
+                  setSavingBrandingSection(null);
+                }
+              }}
+              disabled={savingBrandingSection === 'Header Theme'}
+            />
+
+            {/* Custom color pickers - show when custom theme is selected */}
+            {branding.headerTheme === 'custom' && (
+              <div className="custom-header-colors" style={{ marginTop: '1rem' }}>
+                <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                  <div style={{ flex: '1', minWidth: '120px' }}>
+                    <label className="branding-label" style={{ fontSize: '0.875rem', marginBottom: '0.25rem', display: 'block' }}>
+                      {t('general.headerBackgroundColor')}
+                    </label>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <input
+                        type="color"
+                        value={branding.headerBackgroundColor || '#e7e7e7'}
+                        onChange={(e) => {
+                          const newColor = e.target.value;
+                          handleBrandingChange("headerBackgroundColor", newColor);
+                          // Live preview
+                          window.dispatchEvent(new CustomEvent('header-theme-preview', {
+                            detail: { headerBackgroundColor: newColor }
+                          }));
+                        }}
+                        onBlur={async (e) => {
+                          // Auto-save on blur
+                          const newColor = e.target.value;
+                          if (newColor !== originalBranding.headerBackgroundColor) {
+                            try {
+                              const updatedBranding = { ...branding, headerBackgroundColor: newColor };
+                              const res = await fetch(`${API_URL}/api/branding`, {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                credentials: 'include',
+                                body: JSON.stringify(updatedBranding),
+                              });
+                              if (res.ok) {
+                                setOriginalBranding(updatedBranding);
+                              }
+                            } catch (err) {
+                              // Silent fail - color is still previewed
+                            }
+                          }
+                        }}
+                        style={{
+                          width: '40px',
+                          height: '40px',
+                          padding: '0',
+                          border: '1px solid rgba(255, 255, 255, 0.3)',
+                          borderRadius: '4px',
+                          cursor: 'pointer'
+                        }}
+                      />
+                      <input
+                        type="text"
+                        value={branding.headerBackgroundColor || '#e7e7e7'}
+                        onChange={(e) => {
+                          const newColor = e.target.value;
+                          if (/^#[0-9A-Fa-f]{0,6}$/.test(newColor) || newColor === '#') {
+                            handleBrandingChange("headerBackgroundColor", newColor);
+                            // Live preview only for valid colors
+                            if (/^#[0-9A-Fa-f]{6}$/.test(newColor)) {
+                              window.dispatchEvent(new CustomEvent('header-theme-preview', {
+                                detail: { headerBackgroundColor: newColor }
+                              }));
+                            }
+                          }
+                        }}
+                        onBlur={async (e) => {
+                          const newColor = e.target.value;
+                          if (/^#[0-9A-Fa-f]{6}$/.test(newColor) && newColor !== originalBranding.headerBackgroundColor) {
+                            try {
+                              const updatedBranding = { ...branding, headerBackgroundColor: newColor };
+                              const res = await fetch(`${API_URL}/api/branding`, {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                credentials: 'include',
+                                body: JSON.stringify(updatedBranding),
+                              });
+                              if (res.ok) {
+                                setOriginalBranding(updatedBranding);
+                              }
+                            } catch (err) {
+                              // Silent fail
+                            }
+                          }
+                        }}
+                        className="branding-input"
+                        style={{ width: '90px', fontFamily: 'monospace' }}
+                      />
+                    </div>
+                  </div>
+                  <div style={{ flex: '1', minWidth: '120px' }}>
+                    <label className="branding-label" style={{ fontSize: '0.875rem', marginBottom: '0.25rem', display: 'block' }}>
+                      {t('general.headerTextColor')}
+                    </label>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <input
+                        type="color"
+                        value={branding.headerTextColor || '#1e1e1e'}
+                        onChange={(e) => {
+                          const newColor = e.target.value;
+                          handleBrandingChange("headerTextColor", newColor);
+                          // Live preview
+                          window.dispatchEvent(new CustomEvent('header-theme-preview', {
+                            detail: { headerTextColor: newColor }
+                          }));
+                        }}
+                        onBlur={async (e) => {
+                          // Auto-save on blur
+                          const newColor = e.target.value;
+                          if (newColor !== originalBranding.headerTextColor) {
+                            try {
+                              const updatedBranding = { ...branding, headerTextColor: newColor };
+                              const res = await fetch(`${API_URL}/api/branding`, {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                credentials: 'include',
+                                body: JSON.stringify(updatedBranding),
+                              });
+                              if (res.ok) {
+                                setOriginalBranding(updatedBranding);
+                              }
+                            } catch (err) {
+                              // Silent fail
+                            }
+                          }
+                        }}
+                        style={{
+                          width: '40px',
+                          height: '40px',
+                          padding: '0',
+                          border: '1px solid rgba(255, 255, 255, 0.3)',
+                          borderRadius: '4px',
+                          cursor: 'pointer'
+                        }}
+                      />
+                      <input
+                        type="text"
+                        value={branding.headerTextColor || '#1e1e1e'}
+                        onChange={(e) => {
+                          const newColor = e.target.value;
+                          if (/^#[0-9A-Fa-f]{0,6}$/.test(newColor) || newColor === '#') {
+                            handleBrandingChange("headerTextColor", newColor);
+                            // Live preview only for valid colors
+                            if (/^#[0-9A-Fa-f]{6}$/.test(newColor)) {
+                              window.dispatchEvent(new CustomEvent('header-theme-preview', {
+                                detail: { headerTextColor: newColor }
+                              }));
+                            }
+                          }
+                        }}
+                        onBlur={async (e) => {
+                          const newColor = e.target.value;
+                          if (/^#[0-9A-Fa-f]{6}$/.test(newColor) && newColor !== originalBranding.headerTextColor) {
+                            try {
+                              const updatedBranding = { ...branding, headerTextColor: newColor };
+                              const res = await fetch(`${API_URL}/api/branding`, {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                credentials: 'include',
+                                body: JSON.stringify(updatedBranding),
+                              });
+                              if (res.ok) {
+                                setOriginalBranding(updatedBranding);
+                              }
+                            } catch (err) {
+                              // Silent fail
+                            }
+                          }
+                        }}
+                        className="branding-input"
+                        style={{ width: '90px', fontFamily: 'monospace' }}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Opacity slider */}
+                <div style={{ marginTop: '1rem' }}>
+                  <label className="branding-label" style={{ fontSize: '0.875rem', marginBottom: '0.25rem', display: 'block' }}>
+                    {t('general.headerOpacity')}: {Math.round((branding.headerOpacity ?? 1) * 100)}%
+                  </label>
+                  <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.05"
+                    value={branding.headerOpacity ?? 1}
+                    onChange={(e) => {
+                      const newOpacity = parseFloat(e.target.value);
+                      handleBrandingChange("headerOpacity", newOpacity);
+                      // Live preview
+                      window.dispatchEvent(new CustomEvent('header-theme-preview', {
+                        detail: { headerOpacity: newOpacity }
+                      }));
+                    }}
+                    onMouseUp={async (e) => {
+                      const newOpacity = parseFloat((e.target as HTMLInputElement).value);
+                      if (newOpacity !== originalBranding.headerOpacity) {
+                        try {
+                          const updatedBranding = { ...branding, headerOpacity: newOpacity };
+                          const res = await fetch(`${API_URL}/api/branding`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            credentials: 'include',
+                            body: JSON.stringify(updatedBranding),
+                          });
+                          if (res.ok) {
+                            setOriginalBranding(updatedBranding);
+                          }
+                        } catch (err) {
+                          // Silent fail
+                        }
+                      }
+                    }}
+                    className="quality-slider"
+                    style={{
+                      width: '100%',
+                      height: '6px',
+                      borderRadius: '3px',
+                      outline: 'none',
+                      background: `linear-gradient(to right, var(--primary-color) 0%, var(--primary-color) ${(branding.headerOpacity ?? 1) * 100}%, rgba(255, 255, 255, 0.1) ${(branding.headerOpacity ?? 1) * 100}%, rgba(255, 255, 255, 0.1) 100%)`,
+                      cursor: 'pointer',
+                    }}
+                  />
+                </div>
+
+                {/* Blur slider */}
+                <div style={{ marginTop: '1rem' }}>
+                  <label className="branding-label" style={{ fontSize: '0.875rem', marginBottom: '0.25rem', display: 'block' }}>
+                    {t('general.headerBlur')}: {branding.headerBlur ?? 0}px
+                  </label>
+                  <input
+                    type="range"
+                    min="0"
+                    max="20"
+                    step="1"
+                    value={branding.headerBlur ?? 0}
+                    onChange={(e) => {
+                      const newBlur = parseFloat(e.target.value);
+                      handleBrandingChange("headerBlur", newBlur);
+                      // Live preview
+                      window.dispatchEvent(new CustomEvent('header-theme-preview', {
+                        detail: { headerBlur: newBlur }
+                      }));
+                    }}
+                    onMouseUp={async (e) => {
+                      const newBlur = parseFloat((e.target as HTMLInputElement).value);
+                      if (newBlur !== originalBranding.headerBlur) {
+                        try {
+                          const updatedBranding = { ...branding, headerBlur: newBlur };
+                          const res = await fetch(`${API_URL}/api/branding`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            credentials: 'include',
+                            body: JSON.stringify(updatedBranding),
+                          });
+                          if (res.ok) {
+                            setOriginalBranding(updatedBranding);
+                          }
+                        } catch (err) {
+                          // Silent fail
+                        }
+                      }
+                    }}
+                    className="quality-slider"
+                    style={{
+                      width: '100%',
+                      height: '6px',
+                      borderRadius: '3px',
+                      outline: 'none',
+                      background: `linear-gradient(to right, var(--primary-color) 0%, var(--primary-color) ${((branding.headerBlur ?? 0) / 20) * 100}%, rgba(255, 255, 255, 0.1) ${((branding.headerBlur ?? 0) / 20) * 100}%, rgba(255, 255, 255, 0.1) 100%)`,
+                      cursor: 'pointer',
+                    }}
+                  />
+                </div>
+
+                {/* Border color */}
+                <div style={{ marginTop: '1rem' }}>
+                  <label className="branding-label" style={{ fontSize: '0.875rem', marginBottom: '0.25rem', display: 'block' }}>
+                    {t('general.headerBorderColor')}
+                  </label>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <input
+                      type="color"
+                      value={branding.headerBorderColor || '#1e1e1e'}
+                      onChange={(e) => {
+                        const newColor = e.target.value;
+                        handleBrandingChange("headerBorderColor", newColor);
+                        // Live preview
+                        window.dispatchEvent(new CustomEvent('header-theme-preview', {
+                          detail: { headerBorderColor: newColor }
+                        }));
+                      }}
+                      onBlur={async (e) => {
+                        const newColor = e.target.value;
+                        if (newColor !== originalBranding.headerBorderColor) {
+                          try {
+                            const updatedBranding = { ...branding, headerBorderColor: newColor };
+                            const res = await fetch(`${API_URL}/api/branding`, {
+                              method: 'PUT',
+                              headers: { 'Content-Type': 'application/json' },
+                              credentials: 'include',
+                              body: JSON.stringify(updatedBranding),
+                            });
+                            if (res.ok) {
+                              setOriginalBranding(updatedBranding);
+                            }
+                          } catch (err) {
+                            // Silent fail
+                          }
+                        }
+                      }}
+                      style={{
+                        width: '40px',
+                        height: '40px',
+                        padding: '0',
+                        border: '1px solid rgba(255, 255, 255, 0.3)',
+                        borderRadius: '4px',
+                        cursor: 'pointer'
+                      }}
+                    />
+                    <input
+                      type="text"
+                      value={branding.headerBorderColor || '#1e1e1e'}
+                      onChange={(e) => {
+                        const newColor = e.target.value;
+                        if (/^#[0-9A-Fa-f]{0,6}$/.test(newColor) || newColor === '#') {
+                          handleBrandingChange("headerBorderColor", newColor);
+                          if (/^#[0-9A-Fa-f]{6}$/.test(newColor)) {
+                            window.dispatchEvent(new CustomEvent('header-theme-preview', {
+                              detail: { headerBorderColor: newColor }
+                            }));
+                          }
+                        }
+                      }}
+                      onBlur={async (e) => {
+                        const newColor = e.target.value;
+                        if (/^#[0-9A-Fa-f]{6}$/.test(newColor) && newColor !== originalBranding.headerBorderColor) {
+                          try {
+                            const updatedBranding = { ...branding, headerBorderColor: newColor };
+                            const res = await fetch(`${API_URL}/api/branding`, {
+                              method: 'PUT',
+                              headers: { 'Content-Type': 'application/json' },
+                              credentials: 'include',
+                              body: JSON.stringify(updatedBranding),
+                            });
+                            if (res.ok) {
+                              setOriginalBranding(updatedBranding);
+                            }
+                          } catch (err) {
+                            // Silent fail
+                          }
+                        }
+                      }}
+                      className="branding-input"
+                      style={{ width: '90px', fontFamily: 'monospace' }}
+                    />
+                  </div>
+                </div>
+
+                {/* Border opacity slider */}
+                <div style={{ marginTop: '1rem' }}>
+                  <label className="branding-label" style={{ fontSize: '0.875rem', marginBottom: '0.25rem', display: 'block' }}>
+                    {t('general.headerBorderOpacity')}: {Math.round((branding.headerBorderOpacity ?? 0.2) * 100)}%
+                  </label>
+                  <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.05"
+                    value={branding.headerBorderOpacity ?? 0.2}
+                    onChange={(e) => {
+                      const newOpacity = parseFloat(e.target.value);
+                      handleBrandingChange("headerBorderOpacity", newOpacity);
+                      // Live preview
+                      window.dispatchEvent(new CustomEvent('header-theme-preview', {
+                        detail: { headerBorderOpacity: newOpacity }
+                      }));
+                    }}
+                    onMouseUp={async (e) => {
+                      const newOpacity = parseFloat((e.target as HTMLInputElement).value);
+                      if (newOpacity !== originalBranding.headerBorderOpacity) {
+                        try {
+                          const updatedBranding = { ...branding, headerBorderOpacity: newOpacity };
+                          const res = await fetch(`${API_URL}/api/branding`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            credentials: 'include',
+                            body: JSON.stringify(updatedBranding),
+                          });
+                          if (res.ok) {
+                            setOriginalBranding(updatedBranding);
+                          }
+                        } catch (err) {
+                          // Silent fail
+                        }
+                      }
+                    }}
+                    className="quality-slider"
+                    style={{
+                      width: '100%',
+                      height: '6px',
+                      borderRadius: '3px',
+                      outline: 'none',
+                      background: `linear-gradient(to right, var(--primary-color) 0%, var(--primary-color) ${(branding.headerBorderOpacity ?? 0.2) * 100}%, rgba(255, 255, 255, 0.1) ${(branding.headerBorderOpacity ?? 0.2) * 100}%, rgba(255, 255, 255, 0.1) 100%)`,
+                      cursor: 'pointer',
+                    }}
+                  />
+                </div>
+
+              </div>
+            )}
+          </div>
+
+          {/* Custom CSS */}
+          <div className="branding-group" style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+            <label className="branding-label" style={{ display: 'block', marginBottom: '0.5rem' }}>
+              {t('general.customCSS')}
+            </label>
+            <p className="branding-description">
+              {t('general.customCSSDescription')}
+            </p>
+            <textarea
+              value={branding.customCSS || ''}
+              onChange={(e) => handleBrandingChange("customCSS", e.target.value)}
+              className="branding-textarea"
+              placeholder={t('general.customCSSPlaceholder')}
+              style={{
+                width: '100%',
+                flex: 1,
+                minHeight: '150px',
+                fontFamily: 'monospace',
+                fontSize: '0.875rem',
+                resize: 'vertical'
+              }}
+              disabled={savingBrandingSection === 'Custom CSS'}
+            />
+            {hasBrandingChanges(['customCSS']) && (
+              <div className="section-button-group">
+                <button
+                  onClick={() => cancelBrandingSection(['customCSS'])}
+                  className="btn-secondary btn-small"
+                  disabled={savingBrandingSection === 'Custom CSS'}
+                >
+                  {t('common.cancel')}
+                </button>
+                <button
+                  onClick={() => saveBrandingSection('customCSS', ['customCSS'])}
+                  className="btn-primary btn-small"
+                  disabled={savingBrandingSection === 'Custom CSS'}
+                >
+                  {savingBrandingSection === 'Custom CSS' ? t('common.saving') : t('common.save')}
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Photo Grid Theme */}
+          <div className="branding-group">
+            <label className="branding-label" style={{ display: 'block', marginBottom: '0.5rem' }}>
+              {t('general.photoGridTheme')}
+            </label>
+            <p className="branding-description">
+              {t('general.photoGridThemeDescription')}
+            </p>
+            <CustomDropdown
+              value={branding.photoGridTheme || 'dark'}
+              options={[
+                { value: 'dark', label: t('general.headerThemeDark') },
+                { value: 'light', label: t('general.headerThemeLight') }
+              ]}
+              openUpward={true}
+              onChange={async (newValue) => {
+                handleBrandingChange("photoGridTheme", newValue);
+                // Live preview
+                window.dispatchEvent(new CustomEvent('header-theme-preview', {
+                  detail: { photoGridTheme: newValue as 'light' | 'dark' }
+                }));
+                // Auto-save
+                try {
+                  const updatedBranding = { ...branding, photoGridTheme: newValue as 'light' | 'dark' };
+                  const res = await fetch(`${API_URL}/api/branding`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify(updatedBranding),
+                  });
+                  if (res.ok) {
+                    setMessage({ type: 'success', text: t('general.photoGridThemeSaved') });
+                    setOriginalBranding(updatedBranding);
+                  } else {
+                    const errorData = await res.json().catch(() => ({}));
+                    setMessage({ type: 'error', text: errorData.error || 'Failed to save photo grid theme' });
+                  }
+                } catch (err) {
+                  setMessage({ type: 'error', text: 'Failed to save photo grid theme' });
+                }
+              }}
+            />
+          </div>
+
+          {/* Dropdown Style */}
+          <div className="branding-group">
+            <label className="branding-label" style={{ display: 'block', marginBottom: '0.5rem' }}>
+              {t('general.headerDropdownTheme')}
+            </label>
+            <p className="branding-description">
+              {t('general.headerDropdownThemeDescription')}
+            </p>
+            <CustomDropdown
+              value={branding.headerDropdownTheme || 'light'}
+              options={[
+                { value: 'light', label: t('general.headerThemeLight') },
+                { value: 'dark', label: t('general.headerThemeDark') }
+              ]}
+              openUpward={true}
+              onChange={async (newValue) => {
+                handleBrandingChange("headerDropdownTheme", newValue);
+                // Live preview
+                window.dispatchEvent(new CustomEvent('header-theme-preview', {
+                  detail: { headerDropdownTheme: newValue as 'light' | 'dark' }
+                }));
+                // Auto-save
+                try {
+                  const updatedBranding = { ...branding, headerDropdownTheme: newValue as 'light' | 'dark' };
+                  const res = await fetch(`${API_URL}/api/branding`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify(updatedBranding),
+                  });
+                  if (res.ok) {
+                    setMessage({ type: 'success', text: t('general.dropdownStyleSaved') });
+                    setOriginalBranding(updatedBranding);
+                  } else {
+                    const errorData = await res.json().catch(() => ({}));
+                    setMessage({ type: 'error', text: errorData.error || 'Failed to save dropdown style' });
+                  }
+                } catch (err) {
+                  setMessage({ type: 'error', text: 'Failed to save dropdown style' });
+                }
+              }}
+            />
           </div>
         </div>
     </>
