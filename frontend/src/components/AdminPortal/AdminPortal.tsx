@@ -423,7 +423,13 @@ export default function AdminPortal() {
         shuffleHomepage: data.shuffleHomepage ?? true,
         photoLicense: data.photoLicense || 'cc-by',
         language: data.language || 'en',
-        enableAnimatedBackground: data.enableAnimatedBackground ?? true
+        enableAnimatedBackground: data.enableAnimatedBackground ?? true,
+        headerTheme: data.headerTheme || 'light',
+        headerBackgroundColor: data.headerBackgroundColor || '#e7e7e7',
+        headerTextColor: data.headerTextColor || '#1e1e1e',
+        headerOpacity: data.headerOpacity ?? 1,
+        headerBlur: data.headerBlur ?? false,
+        customCSS: data.customCSS || ''
       };
       info('[AdminPortal] Setting branding state to:', brandingData);
       setBranding(brandingData);

@@ -667,10 +667,25 @@ app.get(/^\/.*/, async (req, res) => {
             avatarPath: configFile.branding?.avatarPath || "/photos/avatar.png",
             primaryColor: configFile.branding?.primaryColor || "#4ade80",
             secondaryColor: configFile.branding?.secondaryColor || "#3b82f6",
-            language: configFile.branding?.language || "en"
+            language: configFile.branding?.language || "en",
+            headerTheme: configFile.branding?.headerTheme || "light",
+            headerBackgroundColor: configFile.branding?.headerBackgroundColor || "#e7e7e7",
+            headerTextColor: configFile.branding?.headerTextColor || "#1e1e1e",
+            headerOpacity: configFile.branding?.headerOpacity ?? 1,
+            headerBlur: configFile.branding?.headerBlur ?? false
           };
-          
-          const htmlWithBranding = htmlWithPlaceholders.replace(
+
+          // Inject custom CSS if present
+          const customCSS = configFile.branding?.customCSS || "";
+          let htmlWithCustomCSS = htmlWithPlaceholders;
+          if (customCSS) {
+            htmlWithCustomCSS = htmlWithPlaceholders.replace(
+              '</head>',
+              `<style id="custom-css">${customCSS}</style>\n  </head>`
+            );
+          }
+
+          const htmlWithBranding = htmlWithCustomCSS.replace(
             '<script type="module"',
             `<script>window.__RUNTIME_API_URL__ = "${apiUrl}"; window.__RUNTIME_BRANDING__ = ${JSON.stringify(brandingData)};</script>\n    <script type="module"`
           );
@@ -811,10 +826,25 @@ app.get(/^\/.*/, async (req, res) => {
             avatarPath: configFile.branding?.avatarPath || "/photos/avatar.png",
             primaryColor: configFile.branding?.primaryColor || "#4ade80",
             secondaryColor: configFile.branding?.secondaryColor || "#3b82f6",
-            language: configFile.branding?.language || "en"
+            language: configFile.branding?.language || "en",
+            headerTheme: configFile.branding?.headerTheme || "light",
+            headerBackgroundColor: configFile.branding?.headerBackgroundColor || "#e7e7e7",
+            headerTextColor: configFile.branding?.headerTextColor || "#1e1e1e",
+            headerOpacity: configFile.branding?.headerOpacity ?? 1,
+            headerBlur: configFile.branding?.headerBlur ?? false
           };
-          
-          const htmlWithBranding = htmlWithPlaceholders.replace(
+
+          // Inject custom CSS if present
+          const customCSS = configFile.branding?.customCSS || "";
+          let htmlWithCustomCSS = htmlWithPlaceholders;
+          if (customCSS) {
+            htmlWithCustomCSS = htmlWithPlaceholders.replace(
+              '</head>',
+              `<style id="custom-css">${customCSS}</style>\n  </head>`
+            );
+          }
+
+          const htmlWithBranding = htmlWithCustomCSS.replace(
             '<script type="module"',
             `<script>window.__RUNTIME_API_URL__ = "${apiUrl}"; window.__RUNTIME_BRANDING__ = ${JSON.stringify(brandingData)};</script>\n    <script type="module"`
           );
@@ -977,10 +1007,25 @@ app.get(/^\/.*/, async (req, res) => {
             avatarPath: configFile.branding?.avatarPath || "/photos/avatar.png",
             primaryColor: configFile.branding?.primaryColor || "#4ade80",
             secondaryColor: configFile.branding?.secondaryColor || "#3b82f6",
-            language: configFile.branding?.language || "en"
+            language: configFile.branding?.language || "en",
+            headerTheme: configFile.branding?.headerTheme || "light",
+            headerBackgroundColor: configFile.branding?.headerBackgroundColor || "#e7e7e7",
+            headerTextColor: configFile.branding?.headerTextColor || "#1e1e1e",
+            headerOpacity: configFile.branding?.headerOpacity ?? 1,
+            headerBlur: configFile.branding?.headerBlur ?? false
           };
-          
-          const htmlWithBranding = htmlWithPlaceholders.replace(
+
+          // Inject custom CSS if present
+          const customCSS = configFile.branding?.customCSS || "";
+          let htmlWithCustomCSS = htmlWithPlaceholders;
+          if (customCSS) {
+            htmlWithCustomCSS = htmlWithPlaceholders.replace(
+              '</head>',
+              `<style id="custom-css">${customCSS}</style>\n  </head>`
+            );
+          }
+
+          const htmlWithBranding = htmlWithCustomCSS.replace(
             '<script type="module"',
             `<script>window.__RUNTIME_API_URL__ = "${apiUrl}"; window.__RUNTIME_BRANDING__ = ${JSON.stringify(brandingData)};</script>\n    <script type="module"`
           );
@@ -1070,9 +1115,23 @@ app.get(/^\/.*/, async (req, res) => {
       avatarPath: configFile.branding?.avatarPath || "/photos/avatar.png",
       primaryColor: configFile.branding?.primaryColor || "#4ade80",
       secondaryColor: configFile.branding?.secondaryColor || "#3b82f6",
-      language: configFile.branding?.language || "en"
+      language: configFile.branding?.language || "en",
+      headerTheme: configFile.branding?.headerTheme || "light",
+      headerBackgroundColor: configFile.branding?.headerBackgroundColor || "#e7e7e7",
+      headerTextColor: configFile.branding?.headerTextColor || "#1e1e1e",
+      headerOpacity: configFile.branding?.headerOpacity ?? 1,
+      headerBlur: configFile.branding?.headerBlur ?? false
     };
-    
+
+    // Inject custom CSS if present
+    const customCSS = configFile.branding?.customCSS || "";
+    if (customCSS) {
+      modifiedHtml = modifiedHtml.replace(
+        '</head>',
+        `<style id="custom-css">${customCSS}</style>\n  </head>`
+      );
+    }
+
     modifiedHtml = modifiedHtml.replace(
       '<script type="module"',
       `<script>window.__RUNTIME_API_URL__ = "${runtimeApiUrl}"; window.__RUNTIME_BRANDING__ = ${JSON.stringify(brandingData)};</script>\n    <script type="module"`

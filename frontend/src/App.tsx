@@ -224,6 +224,11 @@ function App() {
   const [avatarCacheBust, setAvatarCacheBust] = useState(Date.now());
   const [primaryColor, setPrimaryColor] = useState(runtimeBranding?.primaryColor || "#4ade80");
   const [secondaryColor, setSecondaryColor] = useState(runtimeBranding?.secondaryColor || "#3b82f6");
+  const [headerTheme, setHeaderTheme] = useState<'light' | 'dark' | 'custom'>(runtimeBranding?.headerTheme || "light");
+  const [headerBackgroundColor, setHeaderBackgroundColor] = useState(runtimeBranding?.headerBackgroundColor || "#e7e7e7");
+  const [headerTextColor, setHeaderTextColor] = useState(runtimeBranding?.headerTextColor || "#1e1e1e");
+  const [headerOpacity, setHeaderOpacity] = useState<number>(runtimeBranding?.headerOpacity ?? 1);
+  const [headerBlur, setHeaderBlur] = useState<boolean>(runtimeBranding?.headerBlur ?? false);
   const [errorState, setErrorState] = useState<string | null>(null);
 
   // Set language immediately if provided in runtime branding
@@ -282,6 +287,51 @@ function App() {
       secondaryColor
     );
   }, [primaryColor, secondaryColor]);
+
+  // Apply header theme to document for CSS styling
+  useEffect(() => {
+    document.documentElement.setAttribute("data-header-theme", headerTheme);
+    // Apply custom colors as CSS variables when custom theme is selected
+    if (headerTheme === "custom") {
+      document.documentElement.style.setProperty("--header-bg-color", headerBackgroundColor);
+      document.documentElement.style.setProperty("--header-text-color", headerTextColor);
+      document.documentElement.style.setProperty("--header-opacity", String(headerOpacity));
+      document.documentElement.setAttribute("data-header-blur", headerBlur ? "true" : "false");
+    }
+  }, [headerTheme, headerBackgroundColor, headerTextColor, headerOpacity, headerBlur]);
+
+  // Listen for live preview of header theme changes from settings
+  useEffect(() => {
+    const handleHeaderThemePreview = (event: CustomEvent<{
+      headerTheme?: 'light' | 'dark' | 'custom';
+      headerBackgroundColor?: string;
+      headerTextColor?: string;
+      headerOpacity?: number;
+      headerBlur?: boolean;
+    }>) => {
+      const { headerTheme: newTheme, headerBackgroundColor: newBgColor, headerTextColor: newTextColor, headerOpacity: newOpacity, headerBlur: newBlur } = event.detail;
+      if (newTheme !== undefined) {
+        setHeaderTheme(newTheme);
+      }
+      if (newBgColor !== undefined) {
+        setHeaderBackgroundColor(newBgColor);
+      }
+      if (newTextColor !== undefined) {
+        setHeaderTextColor(newTextColor);
+      }
+      if (newOpacity !== undefined) {
+        setHeaderOpacity(newOpacity);
+      }
+      if (newBlur !== undefined) {
+        setHeaderBlur(newBlur);
+      }
+    };
+
+    window.addEventListener('header-theme-preview', handleHeaderThemePreview as EventListener);
+    return () => {
+      window.removeEventListener('header-theme-preview', handleHeaderThemePreview as EventListener);
+    };
+  }, []);
 
   // Hide footer on navigation (except homepage)
   useEffect(() => {
@@ -346,7 +396,12 @@ function App() {
           avatarPath: runtimeBranding?.avatarPath || "/photos/avatar.png",
           primaryColor: runtimeBranding?.primaryColor || "#4ade80",
           secondaryColor: runtimeBranding?.secondaryColor || "#3b82f6",
-          language: runtimeBranding?.language || "en"
+          language: runtimeBranding?.language || "en",
+          headerTheme: runtimeBranding?.headerTheme || "light",
+          headerBackgroundColor: runtimeBranding?.headerBackgroundColor || "#e7e7e7",
+          headerTextColor: runtimeBranding?.headerTextColor || "#1e1e1e",
+          headerOpacity: runtimeBranding?.headerOpacity ?? 1,
+          headerBlur: runtimeBranding?.headerBlur ?? false
         };
         
         // Clear remaining SSR data after using it (homepage was already cleared by ContentGrid)
@@ -439,6 +494,11 @@ function App() {
       
       setPrimaryColor(brandingData.primaryColor || "#4ade80");
       setSecondaryColor(brandingData.secondaryColor || "#3b82f6");
+      setHeaderTheme(brandingData.headerTheme || "light");
+      setHeaderBackgroundColor(brandingData.headerBackgroundColor || "#e7e7e7");
+      setHeaderTextColor(brandingData.headerTextColor || "#1e1e1e");
+      setHeaderOpacity(brandingData.headerOpacity ?? 1);
+      setHeaderBlur(brandingData.headerBlur ?? false);
 
       // Update language from branding config if available
       if (brandingData.language && i18n.language !== brandingData.language) {
