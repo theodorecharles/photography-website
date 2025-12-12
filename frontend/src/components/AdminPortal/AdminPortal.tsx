@@ -419,7 +419,11 @@ export default function AdminPortal() {
         headerBackgroundColor: data.headerBackgroundColor || '#e7e7e7',
         headerTextColor: data.headerTextColor || '#1e1e1e',
         headerOpacity: data.headerOpacity ?? 1,
-        headerBlur: data.headerBlur ?? false,
+        headerBlur: data.headerBlur ?? 0,
+        headerBorderColor: data.headerBorderColor || '#1e1e1e',
+        headerBorderOpacity: data.headerBorderOpacity ?? 0.2,
+        headerDropdownTheme: data.headerDropdownTheme || 'light',
+        photoGridTheme: data.photoGridTheme || 'dark',
         customCSS: data.customCSS || ''
       };
       info('[AdminPortal] Setting branding state to:', brandingData);

@@ -71,7 +71,11 @@ interface BrandingConfig {
   headerBackgroundColor?: string;
   headerTextColor?: string;
   headerOpacity?: number;
-  headerBlur?: boolean;
+  headerBlur?: number;
+  headerBorderColor?: string;
+  headerBorderOpacity?: number;
+  headerDropdownTheme?: 'light' | 'dark';
+  photoGridTheme?: 'light' | 'dark';
   customCSS?: string;
 }
 
@@ -99,7 +103,11 @@ router.get("/", (req: Request, res: Response) => {
       headerBackgroundColor: branding.headerBackgroundColor || "#e7e7e7",
       headerTextColor: branding.headerTextColor || "#1e1e1e",
       headerOpacity: branding.headerOpacity ?? 1,
-      headerBlur: branding.headerBlur ?? false,
+      headerBlur: branding.headerBlur ?? 0,
+      headerBorderColor: branding.headerBorderColor || "#1e1e1e",
+      headerBorderOpacity: branding.headerBorderOpacity ?? 0.2,
+      headerDropdownTheme: branding.headerDropdownTheme || "light",
+      photoGridTheme: branding.photoGridTheme || "dark",
       customCSS: branding.customCSS || "",
     };
 
@@ -139,6 +147,10 @@ router.put("/", requireManager, (req: Request, res: Response) => {
       "headerTextColor",
       "headerOpacity",
       "headerBlur",
+      "headerBorderColor",
+      "headerBorderOpacity",
+      "headerDropdownTheme",
+      "photoGridTheme",
       "customCSS",
     ];
     for (const [key, value] of Object.entries(updates)) {
@@ -148,7 +160,7 @@ router.put("/", requireManager, (req: Request, res: Response) => {
       }
 
       // Type validation based on field
-      if (key === "shuffleHomepage" || key === "enableAnimatedBackground" || key === "headerBlur") {
+      if (key === "shuffleHomepage" || key === "enableAnimatedBackground") {
         if (typeof value !== "boolean") {
           res.status(400).json({ error: `Field ${key} must be a boolean` });
           return;
@@ -156,6 +168,16 @@ router.put("/", requireManager, (req: Request, res: Response) => {
       } else if (key === "headerOpacity") {
         if (typeof value !== "number" || value < 0 || value > 1) {
           res.status(400).json({ error: "Header opacity must be a number between 0 and 1" });
+          return;
+        }
+      } else if (key === "headerBlur") {
+        if (typeof value !== "number" || value < 0 || value > 20) {
+          res.status(400).json({ error: "Header blur must be a number between 0 and 20" });
+          return;
+        }
+      } else if (key === "headerBorderOpacity") {
+        if (typeof value !== "number" || value < 0 || value > 1) {
+          res.status(400).json({ error: "Header border opacity must be a number between 0 and 1" });
           return;
         }
       } else {
@@ -181,7 +203,15 @@ router.put("/", requireManager, (req: Request, res: Response) => {
               .json({ error: "Header theme must be 'light', 'dark', or 'custom'" });
             return;
           }
-        } else if (key === "headerBackgroundColor" || key === "headerTextColor") {
+        } else if (key === "headerDropdownTheme" || key === "photoGridTheme") {
+          // Must be 'light' or 'dark'
+          if (value !== "light" && value !== "dark") {
+            res
+              .status(400)
+              .json({ error: `${key} must be 'light' or 'dark'` });
+            return;
+          }
+        } else if (key === "headerBackgroundColor" || key === "headerTextColor" || key === "headerBorderColor") {
           // Validate hex color format
           if (!/^#[0-9A-Fa-f]{6}$/.test(value)) {
             res

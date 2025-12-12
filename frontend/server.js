@@ -672,7 +672,11 @@ app.get(/^\/.*/, async (req, res) => {
             headerBackgroundColor: configFile.branding?.headerBackgroundColor || "#e7e7e7",
             headerTextColor: configFile.branding?.headerTextColor || "#1e1e1e",
             headerOpacity: configFile.branding?.headerOpacity ?? 1,
-            headerBlur: configFile.branding?.headerBlur ?? false
+            headerBlur: configFile.branding?.headerBlur ?? 0,
+            headerBorderColor: configFile.branding?.headerBorderColor || "#1e1e1e",
+            headerBorderOpacity: configFile.branding?.headerBorderOpacity ?? 0.2,
+            headerDropdownTheme: configFile.branding?.headerDropdownTheme || "light",
+            photoGridTheme: configFile.branding?.photoGridTheme || "dark"
           };
 
           // Inject custom CSS if present
@@ -831,7 +835,11 @@ app.get(/^\/.*/, async (req, res) => {
             headerBackgroundColor: configFile.branding?.headerBackgroundColor || "#e7e7e7",
             headerTextColor: configFile.branding?.headerTextColor || "#1e1e1e",
             headerOpacity: configFile.branding?.headerOpacity ?? 1,
-            headerBlur: configFile.branding?.headerBlur ?? false
+            headerBlur: configFile.branding?.headerBlur ?? 0,
+            headerBorderColor: configFile.branding?.headerBorderColor || "#1e1e1e",
+            headerBorderOpacity: configFile.branding?.headerBorderOpacity ?? 0.2,
+            headerDropdownTheme: configFile.branding?.headerDropdownTheme || "light",
+            photoGridTheme: configFile.branding?.photoGridTheme || "dark"
           };
 
           // Inject custom CSS if present
@@ -1012,7 +1020,11 @@ app.get(/^\/.*/, async (req, res) => {
             headerBackgroundColor: configFile.branding?.headerBackgroundColor || "#e7e7e7",
             headerTextColor: configFile.branding?.headerTextColor || "#1e1e1e",
             headerOpacity: configFile.branding?.headerOpacity ?? 1,
-            headerBlur: configFile.branding?.headerBlur ?? false
+            headerBlur: configFile.branding?.headerBlur ?? 0,
+            headerBorderColor: configFile.branding?.headerBorderColor || "#1e1e1e",
+            headerBorderOpacity: configFile.branding?.headerBorderOpacity ?? 0.2,
+            headerDropdownTheme: configFile.branding?.headerDropdownTheme || "light",
+            photoGridTheme: configFile.branding?.photoGridTheme || "dark"
           };
 
           // Inject custom CSS if present
@@ -1120,7 +1132,11 @@ app.get(/^\/.*/, async (req, res) => {
       headerBackgroundColor: configFile.branding?.headerBackgroundColor || "#e7e7e7",
       headerTextColor: configFile.branding?.headerTextColor || "#1e1e1e",
       headerOpacity: configFile.branding?.headerOpacity ?? 1,
-      headerBlur: configFile.branding?.headerBlur ?? false
+      headerBlur: configFile.branding?.headerBlur ?? 0,
+      headerBorderColor: configFile.branding?.headerBorderColor || "#1e1e1e",
+      headerBorderOpacity: configFile.branding?.headerBorderOpacity ?? 0.2,
+      headerDropdownTheme: configFile.branding?.headerDropdownTheme || "light",
+      photoGridTheme: configFile.branding?.photoGridTheme || "dark"
     };
 
     // Inject custom CSS if present

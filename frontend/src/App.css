@@ -254,3 +254,34 @@ body {
   background: rgba(255, 255, 255, 0.2);
   transform: translateY(-2px);
 }
+
+/* Photo Grid Light Theme - Only affects public pages (homepage/albums), not admin */
+[data-photo-grid-theme="light"] body {
+  background-color: #f5f5f5;
+}
+
+[data-photo-grid-theme="light"] .main-content:not(:has(.admin-portal)) {
+  background-color: #f5f5f5;
+}
+
+/* Keep admin panel dark */
+[data-photo-grid-theme="light"] .main-content:has(.admin-portal) {
+  background-color: #1e1e1e;
+}
+
+[data-photo-grid-theme="light"] .main-content-title {
+  color: #1e1e1e;
+}
+
+[data-photo-grid-theme="light"] .albums-list-content h3 {
+  color: #1e1e1e;
+}
+
+[data-photo-grid-theme="light"] .album-button {
+  background: rgba(0, 0, 0, 0.1);
+  color: #1e1e1e;
+}
+
+[data-photo-grid-theme="light"] .album-button:hover {
+  background: rgba(0, 0, 0, 0.2);
+}

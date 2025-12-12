@@ -39,7 +39,11 @@ export interface BrandingConfig {
   headerBackgroundColor?: string;
   headerTextColor?: string;
   headerOpacity?: number;
-  headerBlur?: boolean;
+  headerBlur?: number;
+  headerBorderColor?: string;
+  headerBorderOpacity?: number;
+  headerDropdownTheme?: 'light' | 'dark';
+  photoGridTheme?: 'light' | 'dark';
   customCSS?: string;
 }
 

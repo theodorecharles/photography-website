@@ -270,14 +270,12 @@
   visibility: hidden;
   opacity: 0;
   border-radius: 0px 0px 8px 8px;
-  transform: translateY(-10px);
-  transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+  transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
 }
 
 .dropdown-menu.open {
   visibility: visible;
   opacity: 1;
-  transform: translateY(0);
 }
 
 .dropdown-menu .nav-link {
@@ -581,18 +579,11 @@
 
 /* Custom header theme - colors applied via CSS variables */
 [data-header-theme="custom"] .header {
-  background-color: var(--header-bg-color, rgb(231, 231, 231));
-  color: var(--header-text-color, #1e1e1e);
-  border-bottom-color: var(--header-text-color, #1e1e1e);
-  opacity: var(--header-opacity, 1);
-}
-
-/* Blur effect for custom header */
-[data-header-theme="custom"][data-header-blur="true"] .header {
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   background-color: color-mix(in srgb, var(--header-bg-color, rgb(231, 231, 231)) calc(var(--header-opacity, 1) * 100%), transparent);
-  opacity: 1; /* Reset opacity since we're using color-mix for transparency */
+  color: var(--header-text-color, #1e1e1e);
+  border-bottom-color: color-mix(in srgb, var(--header-border-color, #1e1e1e) calc(var(--header-border-opacity, 0.2) * 100%), transparent);
+  backdrop-filter: blur(calc(var(--header-blur, 0) * 1px));
+  -webkit-backdrop-filter: blur(calc(var(--header-blur, 0) * 1px));
 }
 
 [data-header-theme="custom"] .header-title {
@@ -625,7 +616,7 @@
 
 [data-header-theme="custom"] .nav-link {
   background: rgba(128, 128, 128, 0.2);
-  border-color: var(--header-text-color, #1e1e1e);
+  border-color: color-mix(in srgb, var(--header-border-color, #1e1e1e) calc(var(--header-border-opacity, 0.2) * 100%), transparent);
   color: var(--header-text-color, #1e1e1e);
 }
 
@@ -636,7 +627,7 @@
 
 [data-header-theme="custom"] .edit-album-btn {
   background: rgba(128, 128, 128, 0.2);
-  border-color: var(--header-text-color, #1e1e1e);
+  border-color: color-mix(in srgb, var(--header-border-color, #1e1e1e) calc(var(--header-border-opacity, 0.2) * 100%), transparent);
   color: var(--header-text-color, #1e1e1e);
 }
 
@@ -651,12 +642,12 @@
 
 [data-header-theme="custom"] .dropdown-menu {
   background: var(--header-bg-color, rgb(231, 231, 231));
-  border-color: var(--header-text-color, #1e1e1e);
+  border-color: color-mix(in srgb, var(--header-border-color, #1e1e1e) calc(var(--header-border-opacity, 0.2) * 100%), transparent);
 }
 
 [data-header-theme="custom"] .dropdown-menu .nav-link {
   background: rgba(128, 128, 128, 0.1);
-  border-color: var(--header-text-color, #1e1e1e);
+  border-color: color-mix(in srgb, var(--header-border-color, #1e1e1e) calc(var(--header-border-opacity, 0.2) * 100%), transparent);
   color: var(--header-text-color, #1e1e1e);
 }
 
@@ -672,7 +663,7 @@
 
 [data-header-theme="custom"] .folder-link {
   background: rgba(128, 128, 128, 0.1);
-  border-color: var(--header-text-color, #1e1e1e);
+  border-color: color-mix(in srgb, var(--header-border-color, #1e1e1e) calc(var(--header-border-opacity, 0.2) * 100%), transparent);
   color: var(--header-text-color, #1e1e1e);
 }
 
@@ -685,4 +676,86 @@
 [data-header-theme="custom"] .folder-link:hover svg,
 [data-header-theme="custom"] .folder-link.open svg {
   stroke: var(--header-bg-color, rgb(231, 231, 231));
+}
+
+/* Light dropdown theme - applies to all header themes */
+[data-header-dropdown-theme="light"] .dropdown-menu {
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-color: #FFF;
+}
+
+[data-header-dropdown-theme="light"] .dropdown-menu .nav-link {
+  background: white;
+  border-color: rgba(51, 51, 51, 0.3);
+  color: #000;
+}
+
+[data-header-dropdown-theme="light"] .dropdown-menu .nav-link:hover {
+  background: #000;
+  color: white;
+}
+
+[data-header-dropdown-theme="light"] .dropdown-menu .nav-link.active {
+  background: #1e1e1e;
+  color: white;
+  border-color: #d5d5d5;
+}
+
+[data-header-dropdown-theme="light"] .folder-link {
+  background: white;
+  border-color: rgba(51, 51, 51, 0.3);
+  color: #000;
+}
+
+[data-header-dropdown-theme="light"] .folder-link:hover,
+[data-header-dropdown-theme="light"] .folder-link.open {
+  background: #000;
+  color: white;
+}
+
+[data-header-dropdown-theme="light"] .folder-link:hover svg,
+[data-header-dropdown-theme="light"] .folder-link.open svg {
+  stroke: white;
+}
+
+/* Dark dropdown theme - applies to all header themes */
+[data-header-dropdown-theme="dark"] .dropdown-menu {
+  background: rgba(30, 30, 30, 0.95);
+  border-color: #444;
+}
+
+[data-header-dropdown-theme="dark"] .dropdown-menu .nav-link {
+  background: #2a2a2a;
+  border-color: rgba(80, 80, 80, 0.5);
+  color: #e0e0e0;
+}
+
+[data-header-dropdown-theme="dark"] .dropdown-menu .nav-link:hover {
+  background: #fff;
+  color: #000;
+}
+
+[data-header-dropdown-theme="dark"] .dropdown-menu .nav-link.active {
+  background: #e0e0e0;
+  color: #1e1e1e;
+  border-color: #555;
+}
+
+[data-header-dropdown-theme="dark"] .folder-link {
+  background: #2a2a2a;
+  border-color: rgba(80, 80, 80, 0.5);
+  color: #e0e0e0;
+}
+
+[data-header-dropdown-theme="dark"] .folder-link:hover,
+[data-header-dropdown-theme="dark"] .folder-link.open {
+  background: #fff;
+  color: #000;
+}
+
+[data-header-dropdown-theme="dark"] .folder-link:hover svg,
+[data-header-dropdown-theme="dark"] .folder-link.open svg {
+  stroke: #000;
 }
