@@ -426,7 +426,10 @@ export default function AdminPortal() {
         enableAnimatedBackground: data.enableAnimatedBackground ?? true,
         headerTheme: data.headerTheme || 'light',
         headerBackgroundColor: data.headerBackgroundColor || '#e7e7e7',
-        headerTextColor: data.headerTextColor || '#1e1e1e'
+        headerTextColor: data.headerTextColor || '#1e1e1e',
+        headerOpacity: data.headerOpacity ?? 1,
+        headerBlur: data.headerBlur ?? false,
+        customCSS: data.customCSS || ''
       };
       info('[AdminPortal] Setting branding state to:', brandingData);
       setBranding(brandingData);

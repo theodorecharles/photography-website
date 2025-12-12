@@ -79,7 +79,7 @@ const GeneralSection: React.FC<GeneralSectionProps> = ({
   const [isInitialized, setIsInitialized] = useState(false);
   const avatarFileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleBrandingChange = (field: keyof BrandingConfig, value: string | boolean) => {
+  const handleBrandingChange = (field: keyof BrandingConfig, value: string | boolean | number) => {
     setBranding({
       ...branding,
       [field]: value,
@@ -976,8 +976,135 @@ const GeneralSection: React.FC<GeneralSectionProps> = ({
                     </div>
                   </div>
                 </div>
+
+                {/* Opacity slider */}
+                <div style={{ marginTop: '1rem' }}>
+                  <label className="branding-label" style={{ fontSize: '0.875rem', marginBottom: '0.25rem', display: 'block' }}>
+                    {t('general.headerOpacity')}
+                  </label>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <input
+                      type="range"
+                      min="0"
+                      max="1"
+                      step="0.05"
+                      value={branding.headerOpacity ?? 1}
+                      onChange={(e) => {
+                        const newOpacity = parseFloat(e.target.value);
+                        handleBrandingChange("headerOpacity", newOpacity);
+                        // Live preview
+                        window.dispatchEvent(new CustomEvent('header-theme-preview', {
+                          detail: { headerOpacity: newOpacity }
+                        }));
+                      }}
+                      onMouseUp={async (e) => {
+                        const newOpacity = parseFloat((e.target as HTMLInputElement).value);
+                        if (newOpacity !== originalBranding.headerOpacity) {
+                          try {
+                            const updatedBranding = { ...branding, headerOpacity: newOpacity };
+                            const res = await fetch(`${API_URL}/api/branding`, {
+                              method: 'PUT',
+                              headers: { 'Content-Type': 'application/json' },
+                              credentials: 'include',
+                              body: JSON.stringify(updatedBranding),
+                            });
+                            if (res.ok) {
+                              setOriginalBranding(updatedBranding);
+                            }
+                          } catch (err) {
+                            // Silent fail
+                          }
+                        }
+                      }}
+                      style={{ flex: 1, cursor: 'pointer' }}
+                    />
+                    <span style={{ minWidth: '40px', textAlign: 'right', fontFamily: 'monospace' }}>
+                      {Math.round((branding.headerOpacity ?? 1) * 100)}%
+                    </span>
+                  </div>
+                </div>
+
+                {/* Blur checkbox */}
+                <div style={{ marginTop: '1rem' }}>
+                  <label className="toggle-switch">
+                    <input
+                      type="checkbox"
+                      checked={branding.headerBlur ?? false}
+                      onChange={async (e) => {
+                        const newBlur = e.target.checked;
+                        handleBrandingChange("headerBlur", newBlur);
+                        // Live preview
+                        window.dispatchEvent(new CustomEvent('header-theme-preview', {
+                          detail: { headerBlur: newBlur }
+                        }));
+                        // Auto-save
+                        try {
+                          const updatedBranding = { ...branding, headerBlur: newBlur };
+                          const res = await fetch(`${API_URL}/api/branding`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            credentials: 'include',
+                            body: JSON.stringify(updatedBranding),
+                          });
+                          if (res.ok) {
+                            setOriginalBranding(updatedBranding);
+                          }
+                        } catch (err) {
+                          // Silent fail
+                        }
+                      }}
+                    />
+                    <span className="toggle-slider"></span>
+                    <span className="toggle-label">
+                      {t('general.headerBlur')}
+                    </span>
+                  </label>
+                </div>
               </div>
             )}
+          </div>
+
+          {/* Custom CSS */}
+          <div className="branding-group">
+            <label className="branding-label" style={{ display: 'block', marginBottom: '0.5rem' }}>
+              {t('general.customCSS')}
+            </label>
+            <p className="branding-description">
+              {t('general.customCSSDescription')}
+            </p>
+            <textarea
+              value={branding.customCSS || ''}
+              onChange={(e) => handleBrandingChange("customCSS", e.target.value)}
+              onBlur={async (e) => {
+                const newCSS = e.target.value;
+                if (newCSS !== originalBranding.customCSS) {
+                  try {
+                    const updatedBranding = { ...branding, customCSS: newCSS };
+                    const res = await fetch(`${API_URL}/api/branding`, {
+                      method: 'PUT',
+                      headers: { 'Content-Type': 'application/json' },
+                      credentials: 'include',
+                      body: JSON.stringify(updatedBranding),
+                    });
+                    if (res.ok) {
+                      setMessage({ type: 'success', text: t('general.customCSSSaved') });
+                      setOriginalBranding(updatedBranding);
+                    }
+                  } catch (err) {
+                    // Silent fail
+                  }
+                }
+              }}
+              className="branding-textarea"
+              placeholder={t('general.customCSSPlaceholder')}
+              style={{
+                width: '100%',
+                minHeight: '150px',
+                fontFamily: 'monospace',
+                fontSize: '0.875rem',
+                resize: 'vertical'
+              }}
+            />
           </div>
         </div>
     </>

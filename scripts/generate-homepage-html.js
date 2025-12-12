@@ -251,8 +251,19 @@ async function generateHomepageHtml() {
       language: config.branding?.language || "en",
       headerTheme: config.branding?.headerTheme || "light",
       headerBackgroundColor: config.branding?.headerBackgroundColor || "#e7e7e7",
-      headerTextColor: config.branding?.headerTextColor || "#1e1e1e"
+      headerTextColor: config.branding?.headerTextColor || "#1e1e1e",
+      headerOpacity: config.branding?.headerOpacity ?? 1,
+      headerBlur: config.branding?.headerBlur ?? false
     };
+
+    // Inject custom CSS if present
+    const customCSS = config.branding?.customCSS || "";
+    if (customCSS) {
+      html = html.replace(
+        '</head>',
+        `<style id="custom-css">${customCSS}</style>\n  </head>`
+      );
+    }
 
     // Build initial data object
     const initialData = {

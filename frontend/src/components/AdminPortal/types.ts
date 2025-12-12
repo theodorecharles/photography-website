@@ -38,6 +38,9 @@ export interface BrandingConfig {
   headerTheme?: 'light' | 'dark' | 'custom';
   headerBackgroundColor?: string;
   headerTextColor?: string;
+  headerOpacity?: number;
+  headerBlur?: boolean;
+  customCSS?: string;
 }
 
 export interface ImageOptimizationSettings {

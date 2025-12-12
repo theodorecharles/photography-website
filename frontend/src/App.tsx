@@ -227,6 +227,8 @@ function App() {
   const [headerTheme, setHeaderTheme] = useState<'light' | 'dark' | 'custom'>(runtimeBranding?.headerTheme || "light");
   const [headerBackgroundColor, setHeaderBackgroundColor] = useState(runtimeBranding?.headerBackgroundColor || "#e7e7e7");
   const [headerTextColor, setHeaderTextColor] = useState(runtimeBranding?.headerTextColor || "#1e1e1e");
+  const [headerOpacity, setHeaderOpacity] = useState<number>(runtimeBranding?.headerOpacity ?? 1);
+  const [headerBlur, setHeaderBlur] = useState<boolean>(runtimeBranding?.headerBlur ?? false);
   const [errorState, setErrorState] = useState<string | null>(null);
 
   // Set language immediately if provided in runtime branding
@@ -293,8 +295,10 @@ function App() {
     if (headerTheme === "custom") {
       document.documentElement.style.setProperty("--header-bg-color", headerBackgroundColor);
       document.documentElement.style.setProperty("--header-text-color", headerTextColor);
+      document.documentElement.style.setProperty("--header-opacity", String(headerOpacity));
+      document.documentElement.setAttribute("data-header-blur", headerBlur ? "true" : "false");
     }
-  }, [headerTheme, headerBackgroundColor, headerTextColor]);
+  }, [headerTheme, headerBackgroundColor, headerTextColor, headerOpacity, headerBlur]);
 
   // Listen for live preview of header theme changes from settings
   useEffect(() => {
@@ -302,8 +306,10 @@ function App() {
       headerTheme?: 'light' | 'dark' | 'custom';
       headerBackgroundColor?: string;
       headerTextColor?: string;
+      headerOpacity?: number;
+      headerBlur?: boolean;
     }>) => {
-      const { headerTheme: newTheme, headerBackgroundColor: newBgColor, headerTextColor: newTextColor } = event.detail;
+      const { headerTheme: newTheme, headerBackgroundColor: newBgColor, headerTextColor: newTextColor, headerOpacity: newOpacity, headerBlur: newBlur } = event.detail;
       if (newTheme !== undefined) {
         setHeaderTheme(newTheme);
       }
@@ -312,6 +318,12 @@ function App() {
       }
       if (newTextColor !== undefined) {
         setHeaderTextColor(newTextColor);
+      }
+      if (newOpacity !== undefined) {
+        setHeaderOpacity(newOpacity);
+      }
+      if (newBlur !== undefined) {
+        setHeaderBlur(newBlur);
       }
     };
 
@@ -387,7 +399,9 @@ function App() {
           language: runtimeBranding?.language || "en",
           headerTheme: runtimeBranding?.headerTheme || "light",
           headerBackgroundColor: runtimeBranding?.headerBackgroundColor || "#e7e7e7",
-          headerTextColor: runtimeBranding?.headerTextColor || "#1e1e1e"
+          headerTextColor: runtimeBranding?.headerTextColor || "#1e1e1e",
+          headerOpacity: runtimeBranding?.headerOpacity ?? 1,
+          headerBlur: runtimeBranding?.headerBlur ?? false
         };
         
         // Clear remaining SSR data after using it (homepage was already cleared by ContentGrid)
@@ -483,6 +497,8 @@ function App() {
       setHeaderTheme(brandingData.headerTheme || "light");
       setHeaderBackgroundColor(brandingData.headerBackgroundColor || "#e7e7e7");
       setHeaderTextColor(brandingData.headerTextColor || "#1e1e1e");
+      setHeaderOpacity(brandingData.headerOpacity ?? 1);
+      setHeaderBlur(brandingData.headerBlur ?? false);
 
       // Update language from branding config if available
       if (brandingData.language && i18n.language !== brandingData.language) {

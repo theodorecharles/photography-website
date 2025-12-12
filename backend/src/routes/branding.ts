@@ -70,6 +70,9 @@ interface BrandingConfig {
   headerTheme?: 'light' | 'dark' | 'custom';
   headerBackgroundColor?: string;
   headerTextColor?: string;
+  headerOpacity?: number;
+  headerBlur?: boolean;
+  customCSS?: string;
 }
 
 // Get current branding configuration
@@ -95,6 +98,9 @@ router.get("/", (req: Request, res: Response) => {
       headerTheme: branding.headerTheme || "light",
       headerBackgroundColor: branding.headerBackgroundColor || "#e7e7e7",
       headerTextColor: branding.headerTextColor || "#1e1e1e",
+      headerOpacity: branding.headerOpacity ?? 1,
+      headerBlur: branding.headerBlur ?? false,
+      customCSS: branding.customCSS || "",
     };
 
     res.json(brandingConfig);
@@ -131,6 +137,9 @@ router.put("/", requireManager, (req: Request, res: Response) => {
       "headerTheme",
       "headerBackgroundColor",
       "headerTextColor",
+      "headerOpacity",
+      "headerBlur",
+      "customCSS",
     ];
     for (const [key, value] of Object.entries(updates)) {
       if (!validFields.includes(key)) {
@@ -138,10 +147,15 @@ router.put("/", requireManager, (req: Request, res: Response) => {
         return;
       }
 
-      // shuffleHomepage and enableAnimatedBackground are booleans, all others are strings
-      if (key === "shuffleHomepage" || key === "enableAnimatedBackground") {
+      // Type validation based on field
+      if (key === "shuffleHomepage" || key === "enableAnimatedBackground" || key === "headerBlur") {
         if (typeof value !== "boolean") {
           res.status(400).json({ error: `Field ${key} must be a boolean` });
+          return;
+        }
+      } else if (key === "headerOpacity") {
+        if (typeof value !== "number" || value < 0 || value > 1) {
+          res.status(400).json({ error: "Header opacity must be a number between 0 and 1" });
           return;
         }
       } else {
@@ -173,6 +187,14 @@ router.put("/", requireManager, (req: Request, res: Response) => {
             res
               .status(400)
               .json({ error: `${key} must be a valid hex color (e.g., #FF0000)` });
+            return;
+          }
+        } else if (key === "customCSS") {
+          // Custom CSS has a larger limit (50KB)
+          if (value.length > 50000) {
+            res
+              .status(400)
+              .json({ error: "Custom CSS is too long (max 50KB)" });
             return;
           }
         } else if (value.length > 500) {

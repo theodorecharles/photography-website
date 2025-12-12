@@ -584,6 +584,15 @@
   background-color: var(--header-bg-color, rgb(231, 231, 231));
   color: var(--header-text-color, #1e1e1e);
   border-bottom-color: var(--header-text-color, #1e1e1e);
+  opacity: var(--header-opacity, 1);
+}
+
+/* Blur effect for custom header */
+[data-header-theme="custom"][data-header-blur="true"] .header {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  background-color: color-mix(in srgb, var(--header-bg-color, rgb(231, 231, 231)) calc(var(--header-opacity, 1) * 100%), transparent);
+  opacity: 1; /* Reset opacity since we're using color-mix for transparency */
 }
 
 [data-header-theme="custom"] .header-title {
