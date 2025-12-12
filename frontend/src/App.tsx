@@ -296,6 +296,31 @@ function App() {
     }
   }, [headerTheme, headerBackgroundColor, headerTextColor]);
 
+  // Listen for live preview of header theme changes from settings
+  useEffect(() => {
+    const handleHeaderThemePreview = (event: CustomEvent<{
+      headerTheme?: 'light' | 'dark' | 'custom';
+      headerBackgroundColor?: string;
+      headerTextColor?: string;
+    }>) => {
+      const { headerTheme: newTheme, headerBackgroundColor: newBgColor, headerTextColor: newTextColor } = event.detail;
+      if (newTheme !== undefined) {
+        setHeaderTheme(newTheme);
+      }
+      if (newBgColor !== undefined) {
+        setHeaderBackgroundColor(newBgColor);
+      }
+      if (newTextColor !== undefined) {
+        setHeaderTextColor(newTextColor);
+      }
+    };
+
+    window.addEventListener('header-theme-preview', handleHeaderThemePreview as EventListener);
+    return () => {
+      window.removeEventListener('header-theme-preview', handleHeaderThemePreview as EventListener);
+    };
+  }, []);
+
   // Hide footer on navigation (except homepage)
   useEffect(() => {
     // Don't hide footer on homepage - it should show immediately via SSR
