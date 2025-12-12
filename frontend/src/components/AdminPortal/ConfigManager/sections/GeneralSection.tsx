@@ -1075,26 +1075,6 @@ const GeneralSection: React.FC<GeneralSectionProps> = ({
             <textarea
               value={branding.customCSS || ''}
               onChange={(e) => handleBrandingChange("customCSS", e.target.value)}
-              onBlur={async (e) => {
-                const newCSS = e.target.value;
-                if (newCSS !== originalBranding.customCSS) {
-                  try {
-                    const updatedBranding = { ...branding, customCSS: newCSS };
-                    const res = await fetch(`${API_URL}/api/branding`, {
-                      method: 'PUT',
-                      headers: { 'Content-Type': 'application/json' },
-                      credentials: 'include',
-                      body: JSON.stringify(updatedBranding),
-                    });
-                    if (res.ok) {
-                      setMessage({ type: 'success', text: t('general.customCSSSaved') });
-                      setOriginalBranding(updatedBranding);
-                    }
-                  } catch (err) {
-                    // Silent fail
-                  }
-                }
-              }}
               className="branding-textarea"
               placeholder={t('general.customCSSPlaceholder')}
               style={{
@@ -1104,7 +1084,26 @@ const GeneralSection: React.FC<GeneralSectionProps> = ({
                 fontSize: '0.875rem',
                 resize: 'vertical'
               }}
+              disabled={savingBrandingSection === 'Custom CSS'}
             />
+            {hasBrandingChanges(['customCSS']) && (
+              <div className="section-button-group">
+                <button
+                  onClick={() => cancelBrandingSection(['customCSS'])}
+                  className="btn-secondary btn-small"
+                  disabled={savingBrandingSection === 'Custom CSS'}
+                >
+                  {t('common.cancel')}
+                </button>
+                <button
+                  onClick={() => saveBrandingSection('customCSS', ['customCSS'])}
+                  className="btn-primary btn-small"
+                  disabled={savingBrandingSection === 'Custom CSS'}
+                >
+                  {savingBrandingSection === 'Custom CSS' ? t('common.saving') : t('common.save')}
+                </button>
+              </div>
+            )}
           </div>
         </div>
     </>
