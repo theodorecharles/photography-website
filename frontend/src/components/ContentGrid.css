@@ -431,3 +431,24 @@
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(74, 222, 128, 0.4);
 }
+
+/* Photo Grid Light Theme */
+[data-photo-grid-theme="light"] .photo-item {
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+[data-photo-grid-theme="light"] .photo-item.albums-list {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+[data-photo-grid-theme="light"] .photo-loading-overlay {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+[data-photo-grid-theme="light"] .empty-state h2 {
+  color: #1e1e1e;
+}
+
+[data-photo-grid-theme="light"] .empty-state p {
+  color: #666;
+}

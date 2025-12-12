@@ -144,3 +144,55 @@
     justify-content: center;
   }
 }
+
+/* Photo Grid Light Theme - Footer */
+[data-photo-grid-theme="light"] .footer {
+  background-color: #f5f5f5;
+  border-top-color: #ddd;
+}
+
+[data-photo-grid-theme="light"] .footer-content {
+  color: #1e1e1e;
+}
+
+[data-photo-grid-theme="light"] .footer-separator {
+  color: #666;
+}
+
+[data-photo-grid-theme="light"] .footer-link {
+  color: #1e1e1e;
+}
+
+[data-photo-grid-theme="light"] .footer-link:visited {
+  color: #1e1e1e;
+}
+
+[data-photo-grid-theme="light"] .footer-powered-by {
+  color: #666;
+}
+
+[data-photo-grid-theme="light"] .footer-galleria-link,
+[data-photo-grid-theme="light"] .footer-galleria-link:visited {
+  color: #1e1e1e;
+}
+
+[data-photo-grid-theme="light"] .footer-galleria-link:hover {
+  color: #333;
+  border-bottom-color: #333;
+}
+
+[data-photo-grid-theme="light"] .footer-signin-btn {
+  background-color: #e8e8e8;
+  color: #1e1e1e;
+  border-color: #ccc;
+}
+
+[data-photo-grid-theme="light"] .footer-signin-btn:hover {
+  background-color: #ddd;
+  border-color: #bbb;
+}
+
+[data-photo-grid-theme="light"] .footer-signin-btn:visited,
+[data-photo-grid-theme="light"] .footer-signin-btn:visited:hover {
+  color: #1e1e1e;
+}

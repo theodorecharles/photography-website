@@ -41,17 +41,8 @@ export default function AdminPortal() {
   const [cssLoaded, setCssLoaded] = useState(false);
   const sseToaster = useSSEToaster();
 
-  // Detect Linux Firefox for animated background workaround
-  const isLinuxFirefox = () => {
-    const ua = navigator.userAgent;
-    const isFirefox = ua.includes('Firefox');
-    const isLinux = ua.includes('Linux');
-    return isFirefox && isLinux;
-  };
-
   // Helper to determine if animated background should be shown
   const shouldShowAnimatedBg = () => {
-    if (isLinuxFirefox()) return false; // Disable on Linux Firefox due to gradient banding
     return branding.enableAnimatedBackground !== false;
   };
   
@@ -428,7 +419,11 @@ export default function AdminPortal() {
         headerBackgroundColor: data.headerBackgroundColor || '#e7e7e7',
         headerTextColor: data.headerTextColor || '#1e1e1e',
         headerOpacity: data.headerOpacity ?? 1,
-        headerBlur: data.headerBlur ?? false,
+        headerBlur: data.headerBlur ?? 0,
+        headerBorderColor: data.headerBorderColor || '#1e1e1e',
+        headerBorderOpacity: data.headerBorderOpacity ?? 0.2,
+        headerDropdownTheme: data.headerDropdownTheme || 'light',
+        photoGridTheme: data.photoGridTheme || 'dark',
         customCSS: data.customCSS || ''
       };
       info('[AdminPortal] Setting branding state to:', brandingData);

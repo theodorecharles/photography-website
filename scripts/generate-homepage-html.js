@@ -253,7 +253,11 @@ async function generateHomepageHtml() {
       headerBackgroundColor: config.branding?.headerBackgroundColor || "#e7e7e7",
       headerTextColor: config.branding?.headerTextColor || "#1e1e1e",
       headerOpacity: config.branding?.headerOpacity ?? 1,
-      headerBlur: config.branding?.headerBlur ?? false
+      headerBlur: config.branding?.headerBlur ?? 0,
+      headerBorderColor: config.branding?.headerBorderColor || "#1e1e1e",
+      headerBorderOpacity: config.branding?.headerBorderOpacity ?? 0.2,
+      headerDropdownTheme: config.branding?.headerDropdownTheme || "light",
+      photoGridTheme: config.branding?.photoGridTheme || "dark"
     };
 
     // Inject custom CSS if present
