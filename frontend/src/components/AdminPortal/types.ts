@@ -35,6 +35,9 @@ export interface BrandingConfig {
   photoLicense?: string;
   language?: string;
   enableAnimatedBackground?: boolean;
+  headerTheme?: 'light' | 'dark' | 'custom';
+  headerBackgroundColor?: string;
+  headerTextColor?: string;
 }
 
 export interface ImageOptimizationSettings {

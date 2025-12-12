@@ -692,7 +692,7 @@ const GeneralSection: React.FC<GeneralSectionProps> = ({
                     enableAnimatedBackground: newValue
                   };
                   setBranding(updatedBranding);
-                  
+
                   // Save to backend
                   setSavingBrandingSection('Animated Background');
                   try {
@@ -731,6 +731,185 @@ const GeneralSection: React.FC<GeneralSectionProps> = ({
                 {branding.enableAnimatedBackground ?? true ? t('common.enabled') : t('common.disabled')}
               </span>
             </label>
+          </div>
+
+          <div className="branding-group">
+            <label className="branding-label" style={{ display: 'block', marginBottom: '0.5rem' }}>
+              {t('general.headerTheme')}
+            </label>
+            <p className="branding-description">
+              {t('general.headerThemeDescription')}
+            </p>
+            <CustomDropdown
+              value={branding.headerTheme || 'light'}
+              options={[
+                { value: 'light', label: t('general.headerThemeLight') },
+                { value: 'dark', label: t('general.headerThemeDark') },
+                { value: 'custom', label: t('general.headerThemeCustom') }
+              ]}
+              openUpward={true}
+              onChange={async (newValue) => {
+                handleBrandingChange("headerTheme", newValue);
+
+                // Auto-save immediately
+                setSavingBrandingSection('Header Theme');
+                try {
+                  const updatedBranding = {
+                    ...branding,
+                    headerTheme: newValue as 'light' | 'dark' | 'custom'
+                  };
+
+                  const res = await fetch(`${API_URL}/api/branding`, {
+                    method: 'PUT',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify(updatedBranding),
+                  });
+
+                  if (res.ok) {
+                    setMessage({ type: 'success', text: t('general.headerThemeSaved') });
+                    trackBrandingUpdate(['headerTheme']);
+                    setOriginalBranding(updatedBranding);
+                    // Dispatch event so App.tsx can update the header theme
+                    window.dispatchEvent(new Event('branding-updated'));
+                  } else {
+                    const errorData = await res.json().catch(() => ({ error: t('common.unknownError') }));
+                    setMessage({ type: 'error', text: errorData.error || t('general.failedToSaveHeaderTheme') });
+                    // Revert on error
+                    setBranding(branding);
+                  }
+                } catch (err) {
+                  const errorMessage = err instanceof Error ? err.message : t('general.errorSavingHeaderTheme');
+                  setMessage({ type: 'error', text: errorMessage });
+                  // Revert on error
+                  setBranding(branding);
+                } finally {
+                  setSavingBrandingSection(null);
+                }
+              }}
+              disabled={savingBrandingSection === 'Header Theme'}
+            />
+
+            {/* Custom color pickers - show when custom theme is selected */}
+            {branding.headerTheme === 'custom' && (
+              <div className="custom-header-colors" style={{ marginTop: '1rem' }}>
+                <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                  <div style={{ flex: '1', minWidth: '120px' }}>
+                    <label className="branding-label" style={{ fontSize: '0.875rem', marginBottom: '0.25rem', display: 'block' }}>
+                      {t('general.headerBackgroundColor')}
+                    </label>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <input
+                        type="color"
+                        value={branding.headerBackgroundColor || '#e7e7e7'}
+                        onChange={(e) => handleBrandingChange("headerBackgroundColor", e.target.value)}
+                        style={{
+                          width: '40px',
+                          height: '40px',
+                          padding: '0',
+                          border: '1px solid rgba(255, 255, 255, 0.3)',
+                          borderRadius: '4px',
+                          cursor: 'pointer'
+                        }}
+                        disabled={savingBrandingSection === 'Header Colors'}
+                      />
+                      <input
+                        type="text"
+                        value={branding.headerBackgroundColor || '#e7e7e7'}
+                        onChange={(e) => {
+                          if (/^#[0-9A-Fa-f]{0,6}$/.test(e.target.value) || e.target.value === '#') {
+                            handleBrandingChange("headerBackgroundColor", e.target.value);
+                          }
+                        }}
+                        className="branding-input"
+                        style={{ width: '90px', fontFamily: 'monospace' }}
+                        disabled={savingBrandingSection === 'Header Colors'}
+                      />
+                    </div>
+                  </div>
+                  <div style={{ flex: '1', minWidth: '120px' }}>
+                    <label className="branding-label" style={{ fontSize: '0.875rem', marginBottom: '0.25rem', display: 'block' }}>
+                      {t('general.headerTextColor')}
+                    </label>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <input
+                        type="color"
+                        value={branding.headerTextColor || '#1e1e1e'}
+                        onChange={(e) => handleBrandingChange("headerTextColor", e.target.value)}
+                        style={{
+                          width: '40px',
+                          height: '40px',
+                          padding: '0',
+                          border: '1px solid rgba(255, 255, 255, 0.3)',
+                          borderRadius: '4px',
+                          cursor: 'pointer'
+                        }}
+                        disabled={savingBrandingSection === 'Header Colors'}
+                      />
+                      <input
+                        type="text"
+                        value={branding.headerTextColor || '#1e1e1e'}
+                        onChange={(e) => {
+                          if (/^#[0-9A-Fa-f]{0,6}$/.test(e.target.value) || e.target.value === '#') {
+                            handleBrandingChange("headerTextColor", e.target.value);
+                          }
+                        }}
+                        className="branding-input"
+                        style={{ width: '90px', fontFamily: 'monospace' }}
+                        disabled={savingBrandingSection === 'Header Colors'}
+                      />
+                    </div>
+                  </div>
+                </div>
+                {hasBrandingChanges(['headerBackgroundColor', 'headerTextColor']) && (
+                  <div className="section-button-group" style={{ marginTop: '0.75rem' }}>
+                    <button
+                      onClick={() => cancelBrandingSection(['headerBackgroundColor', 'headerTextColor'])}
+                      className="btn-secondary btn-small"
+                      disabled={savingBrandingSection === 'Header Colors'}
+                    >
+                      {t('common.cancel')}
+                    </button>
+                    <button
+                      onClick={async () => {
+                        setSavingBrandingSection('Header Colors');
+                        try {
+                          const res = await fetch(`${API_URL}/api/branding`, {
+                            method: 'PUT',
+                            headers: {
+                              'Content-Type': 'application/json',
+                            },
+                            credentials: 'include',
+                            body: JSON.stringify(branding),
+                          });
+
+                          if (res.ok) {
+                            setMessage({ type: 'success', text: t('general.headerColorsSaved') });
+                            trackBrandingUpdate(['headerBackgroundColor', 'headerTextColor']);
+                            setOriginalBranding(branding);
+                            window.dispatchEvent(new Event('branding-updated'));
+                          } else {
+                            const errorData = await res.json().catch(() => ({ error: t('common.unknownError') }));
+                            setMessage({ type: 'error', text: errorData.error || t('general.failedToSaveHeaderColors') });
+                          }
+                        } catch (err) {
+                          const errorMessage = err instanceof Error ? err.message : t('general.errorSavingHeaderColors');
+                          setMessage({ type: 'error', text: errorMessage });
+                        } finally {
+                          setSavingBrandingSection(null);
+                        }
+                      }}
+                      className="btn-primary btn-small"
+                      disabled={savingBrandingSection === 'Header Colors'}
+                    >
+                      {savingBrandingSection === 'Header Colors' ? t('common.saving') : t('common.save')}
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
     </>

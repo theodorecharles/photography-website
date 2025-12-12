@@ -67,6 +67,9 @@ interface BrandingConfig {
   photoLicense?: string;
   language?: string;
   enableAnimatedBackground?: boolean;
+  headerTheme?: 'light' | 'dark' | 'custom';
+  headerBackgroundColor?: string;
+  headerTextColor?: string;
 }
 
 // Get current branding configuration
@@ -89,6 +92,9 @@ router.get("/", (req: Request, res: Response) => {
       photoLicense: branding.photoLicense || "cc-by",
       language: branding.language || "en",
       enableAnimatedBackground: branding.enableAnimatedBackground ?? true,
+      headerTheme: branding.headerTheme || "light",
+      headerBackgroundColor: branding.headerBackgroundColor || "#e7e7e7",
+      headerTextColor: branding.headerTextColor || "#1e1e1e",
     };
 
     res.json(brandingConfig);
@@ -122,6 +128,9 @@ router.put("/", requireManager, (req: Request, res: Response) => {
       "photoLicense",
       "language",
       "enableAnimatedBackground",
+      "headerTheme",
+      "headerBackgroundColor",
+      "headerTextColor",
     ];
     for (const [key, value] of Object.entries(updates)) {
       if (!validFields.includes(key)) {
@@ -148,6 +157,22 @@ router.put("/", requireManager, (req: Request, res: Response) => {
             res
               .status(400)
               .json({ error: `Field ${key} is too long (max 10 characters)` });
+            return;
+          }
+        } else if (key === "headerTheme") {
+          // headerTheme must be 'light', 'dark', or 'custom'
+          if (value !== "light" && value !== "dark" && value !== "custom") {
+            res
+              .status(400)
+              .json({ error: "Header theme must be 'light', 'dark', or 'custom'" });
+            return;
+          }
+        } else if (key === "headerBackgroundColor" || key === "headerTextColor") {
+          // Validate hex color format
+          if (!/^#[0-9A-Fa-f]{6}$/.test(value)) {
+            res
+              .status(400)
+              .json({ error: `${key} must be a valid hex color (e.g., #FF0000)` });
             return;
           }
         } else if (value.length > 500) {
