@@ -8,7 +8,10 @@
   background-color: rgb(231, 231, 231);
   color: #1e1e1e;
   padding: 0 1rem;
-  height: 54px;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-left: max(1rem, env(safe-area-inset-left, 1rem));
+  padding-right: max(1rem, env(safe-area-inset-right, 1rem));
+  height: calc(54px + env(safe-area-inset-top, 0px));
   display: flex;
   align-items: center;
   position: fixed;
@@ -427,6 +430,9 @@
 @media (max-width: 599px) {
   .header {
     padding: 0 0.5rem;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-left: max(0.5rem, env(safe-area-inset-left, 0.5rem));
+    padding-right: max(0.5rem, env(safe-area-inset-right, 0.5rem));
   }
 
   /* Hide album title on mobile - duplicate title exists elsewhere with white text */
