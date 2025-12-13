@@ -488,17 +488,17 @@ app.get(/^\/.*/, async (req, res) => {
           const ipAddress = host.split(":")[0];
           runtimeApiUrl = `${protocol}://${ipAddress}:3001`;
         } else if (host.includes("localhost")) {
-          // Localhost development
-          runtimeApiUrl = "http://localhost:3001";
+          // Localhost development - use BACKEND_DOMAIN if set (for Docker port mapping)
+          runtimeApiUrl = process.env.BACKEND_DOMAIN || "http://localhost:3001";
         } else if (host.startsWith("www-")) {
           // Domain with www- prefix (e.g., www-dev.example.com -> api-dev.example.com)
           runtimeApiUrl = `${protocol}://api-${host.substring(4)}`;
         } else if (host.startsWith("www.")) {
           // Domain with www. prefix (e.g., www.example.com -> api.example.com)
           runtimeApiUrl = `${protocol}://api.${host.substring(4)}`;
-        } else if (process.env.BACKEND_DOMAIN || process.env.API_URL) {
+        } else if (process.env.BACKEND_DOMAIN) {
           // Fall back to environment variable if provided
-          runtimeApiUrl = process.env.BACKEND_DOMAIN || process.env.API_URL;
+          runtimeApiUrl = process.env.BACKEND_DOMAIN;
         } else if (
           !isSetupMode &&
           config.frontend.apiUrl &&
@@ -1077,17 +1077,17 @@ app.get(/^\/.*/, async (req, res) => {
       const ipAddress = host.split(":")[0];
       runtimeApiUrl = `${protocol}://${ipAddress}:3001`;
     } else if (host.includes("localhost")) {
-      // Localhost development
-      runtimeApiUrl = "http://localhost:3001";
+      // Localhost development - use BACKEND_DOMAIN if set (for Docker port mapping)
+      runtimeApiUrl = process.env.BACKEND_DOMAIN || "http://localhost:3001";
     } else if (host.startsWith("www-")) {
       // Domain with www- prefix (e.g., www-dev.example.com -> api-dev.example.com)
       runtimeApiUrl = `${protocol}://api-${host.substring(4)}`;
     } else if (host.startsWith("www.")) {
       // Domain with www. prefix (e.g., www.example.com -> api.example.com)
       runtimeApiUrl = `${protocol}://api.${host.substring(4)}`;
-    } else if (process.env.BACKEND_DOMAIN || process.env.API_URL) {
+    } else if (process.env.BACKEND_DOMAIN) {
       // Fall back to environment variable if provided
-      runtimeApiUrl = process.env.BACKEND_DOMAIN || process.env.API_URL;
+      runtimeApiUrl = process.env.BACKEND_DOMAIN;
     } else if (
       !isSetupMode &&
       config.frontend.apiUrl &&
