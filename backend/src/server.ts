@@ -24,6 +24,7 @@ import config, {
   PORT,
   PHOTOS_DIR,
   OPTIMIZED_DIR,
+  DATA_DIR,
   getAllowedOrigins,
   getConfigExists,
   RATE_LIMIT_WINDOW_MS,
@@ -161,7 +162,7 @@ if (isProduction) {
 // PHOTOS_DIR should be relative to where you run the backend (typically backend/ directory)
 let photosDir = path.resolve(__dirname, "../../", PHOTOS_DIR);
 let optimizedDir = path.resolve(__dirname, "../../", OPTIMIZED_DIR);
-let videoDir = path.resolve(__dirname, "../../data/video");
+let videoDir = path.join(DATA_DIR, "video");
 
 // Resolve symlinks to get the real path (important for macOS TCC permissions)
 try {
