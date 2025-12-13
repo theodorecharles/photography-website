@@ -38,42 +38,65 @@ function runMigration() {
     // Check if migration is needed by looking at table schema
     const tableInfo = db.prepare("PRAGMA table_info(albums)").all();
     const showOnHomepageColumn = tableInfo.find(col => col.name === 'show_on_homepage');
-    
+
     if (!showOnHomepageColumn) {
       console.log('⚠️  show_on_homepage column does not exist. Skipping migration.');
       db.close();
       return;
     }
-    
+
+    // Check if migration has already been applied by checking the default value
+    // If default is already '0', the migration has been applied
+    if (showOnHomepageColumn.dflt_value === '0') {
+      console.log('✓ Migration already applied (show_on_homepage default is already 0). Skipping.');
+      db.close();
+      return;
+    }
+
+    // Check if folder_id and sort_order columns exist (they might have been added already)
+    const hasFolderId = tableInfo.find(col => col.name === 'folder_id');
+    const hasSortOrder = tableInfo.find(col => col.name === 'sort_order');
+
     // SQLite doesn't allow ALTER TABLE to change default values directly
     // We need to recreate the table with new defaults
-    
+
     console.log('Creating new albums table with updated defaults...');
-    
-    db.exec(`
-      -- Create new table with correct defaults
-      CREATE TABLE IF NOT EXISTS albums_new (
+    console.log(`  Preserving folder_id: ${hasFolderId ? 'yes' : 'no'}`);
+    console.log(`  Preserving sort_order: ${hasSortOrder ? 'yes' : 'no'}`);
+
+    // Build column lists dynamically to preserve all existing columns
+    const newTableColumns = `
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL UNIQUE,
         published BOOLEAN NOT NULL DEFAULT 0,
         show_on_homepage BOOLEAN NOT NULL DEFAULT 0,
+        ${hasSortOrder ? 'sort_order INTEGER,' : ''}
+        ${hasFolderId ? 'folder_id INTEGER REFERENCES album_folders(id) ON DELETE SET NULL,' : ''}
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    `;
+
+    const copyColumns = `id, name, published, show_on_homepage${hasSortOrder ? ', sort_order' : ''}${hasFolderId ? ', folder_id' : ''}, created_at, updated_at`;
+
+    db.exec(`
+      -- Create new table with correct defaults
+      CREATE TABLE IF NOT EXISTS albums_new (
+        ${newTableColumns}
       );
-      
-      -- Copy existing data
-      INSERT INTO albums_new (id, name, published, show_on_homepage, created_at, updated_at)
-      SELECT id, name, published, show_on_homepage, created_at, updated_at
+
+      -- Copy existing data (preserving all columns including folder_id and sort_order if they exist)
+      INSERT INTO albums_new (${copyColumns})
+      SELECT ${copyColumns}
       FROM albums;
-      
+
       -- Drop old table
       DROP TABLE albums;
-      
+
       -- Rename new table
       ALTER TABLE albums_new RENAME TO albums;
     `);
-    
-    console.log('✓ Table recreated with new defaults');
+
+    console.log('✓ Table recreated with new defaults (all existing columns preserved)');
     
     // Optional: Ask if we should reset existing albums (for now, we'll just log the state)
     const albumCount = db.prepare('SELECT COUNT(*) as count FROM albums').get().count;
