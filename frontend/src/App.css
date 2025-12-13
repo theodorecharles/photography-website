@@ -196,14 +196,14 @@ body {
 
 @media (max-width: 511px) {
   .main-content {
-    margin-top: 54px;
+    margin-top: calc(54px + env(safe-area-inset-top, 0px));
   }
 }
 
 @media (max-width: 599px) {
   .main-content {
     padding-bottom: 2rem;
-    margin-top: 54px;
+    margin-top: calc(54px + env(safe-area-inset-top, 0px));
   }
   
   .main-content-title {
