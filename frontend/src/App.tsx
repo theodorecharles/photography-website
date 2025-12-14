@@ -221,7 +221,7 @@ function App() {
   const runtimeBranding = (window as any).__RUNTIME_BRANDING__;
   const [siteName, setSiteName] = useState(runtimeBranding?.siteName || "Galleria");
   const [avatarPath, setAvatarPath] = useState(runtimeBranding?.avatarPath || "/photos/avatar.png");
-  const [headerAvatarPath, setHeaderAvatarPath] = useState(runtimeBranding?.headerAvatarPath || "/photos/avatar-header.webp");
+  const [headerAvatarPath] = useState(runtimeBranding?.headerAvatarPath || "/photos/avatar-header.webp");
   const [avatarCacheBust, setAvatarCacheBust] = useState(runtimeBranding?.avatarCacheBust || 0);
   const [primaryColor, setPrimaryColor] = useState(runtimeBranding?.primaryColor || "#4ade80");
   const [secondaryColor, setSecondaryColor] = useState(runtimeBranding?.secondaryColor || "#3b82f6");
