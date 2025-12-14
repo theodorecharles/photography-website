@@ -65,6 +65,14 @@ if (fs.existsSync(configPath)) {
   };
 }
 
+/**
+ * Build inline script that applies theme immediately (before React hydrates)
+ * This prevents flash of unstyled/wrong-themed content
+ */
+function buildThemeScript(apiUrl, brandingData) {
+  return `window.__RUNTIME_API_URL__ = "${apiUrl}"; window.__RUNTIME_BRANDING__ = ${JSON.stringify(brandingData)}; (function(){var b=window.__RUNTIME_BRANDING__;if(b){document.documentElement.setAttribute("data-header-theme",b.headerTheme||"light");document.documentElement.setAttribute("data-header-dropdown-theme",b.headerDropdownTheme||"light");document.documentElement.setAttribute("data-photo-grid-theme",b.photoGridTheme||"dark");if(b.headerTheme==="custom"){var s=document.documentElement.style;s.setProperty("--header-bg-color",b.headerBackgroundColor||"#e7e7e7");s.setProperty("--header-text-color",b.headerTextColor||"#1e1e1e");s.setProperty("--header-opacity",b.headerOpacity??1);s.setProperty("--header-blur",b.headerBlur??0);s.setProperty("--header-border-color",b.headerBorderColor||"#1e1e1e");s.setProperty("--header-border-opacity",b.headerBorderOpacity??0.2)}}})();`;
+}
+
 // Watch config file for changes and reload automatically
 if (!isSetupMode) {
   fs.watch(configPath, (eventType) => {
@@ -693,7 +701,7 @@ app.get(/^\/.*/, async (req, res) => {
 
           const htmlWithBranding = htmlWithCustomCSS.replace(
             '<script type="module"',
-            `<script>window.__RUNTIME_API_URL__ = "${apiUrl}"; window.__RUNTIME_BRANDING__ = ${JSON.stringify(brandingData)};</script>\n    <script type="module"`
+            `<script>${buildThemeScript(apiUrl, brandingData)}</script>\n    <script type="module"`
           );
 
           return res.send(htmlWithBranding);
@@ -858,7 +866,7 @@ app.get(/^\/.*/, async (req, res) => {
 
           const htmlWithBranding = htmlWithCustomCSS.replace(
             '<script type="module"',
-            `<script>window.__RUNTIME_API_URL__ = "${apiUrl}"; window.__RUNTIME_BRANDING__ = ${JSON.stringify(brandingData)};</script>\n    <script type="module"`
+            `<script>${buildThemeScript(apiUrl, brandingData)}</script>\n    <script type="module"`
           );
 
           return res.send(htmlWithBranding);
@@ -1045,7 +1053,7 @@ app.get(/^\/.*/, async (req, res) => {
 
           const htmlWithBranding = htmlWithCustomCSS.replace(
             '<script type="module"',
-            `<script>window.__RUNTIME_API_URL__ = "${apiUrl}"; window.__RUNTIME_BRANDING__ = ${JSON.stringify(brandingData)};</script>\n    <script type="module"`
+            `<script>${buildThemeScript(apiUrl, brandingData)}</script>\n    <script type="module"`
           );
 
           return res.send(htmlWithBranding);
@@ -1158,7 +1166,7 @@ app.get(/^\/.*/, async (req, res) => {
 
     modifiedHtml = modifiedHtml.replace(
       '<script type="module"',
-      `<script>window.__RUNTIME_API_URL__ = "${runtimeApiUrl}"; window.__RUNTIME_BRANDING__ = ${JSON.stringify(brandingData)};</script>\n    <script type="module"`
+      `<script>${buildThemeScript(runtimeApiUrl, brandingData)}</script>\n    <script type="module"`
     );
 
     res.send(modifiedHtml);

@@ -278,10 +278,13 @@ async function generateHomepageHtml() {
       externalLinks: externalLinksData,
     };
 
+    // Build inline script that applies theme immediately (before React hydrates)
+    const themeScript = `window.__RUNTIME_API_URL__ = "${apiUrl}"; window.__RUNTIME_BRANDING__ = ${JSON.stringify(brandingData)}; window.__INITIAL_DATA__ = ${JSON.stringify(initialData)}; (function(){var b=window.__RUNTIME_BRANDING__;if(b){document.documentElement.setAttribute("data-header-theme",b.headerTheme||"light");document.documentElement.setAttribute("data-header-dropdown-theme",b.headerDropdownTheme||"light");document.documentElement.setAttribute("data-photo-grid-theme",b.photoGridTheme||"dark");if(b.headerTheme==="custom"){var s=document.documentElement.style;s.setProperty("--header-bg-color",b.headerBackgroundColor||"#e7e7e7");s.setProperty("--header-text-color",b.headerTextColor||"#1e1e1e");s.setProperty("--header-opacity",b.headerOpacity??1);s.setProperty("--header-blur",b.headerBlur??0);s.setProperty("--header-border-color",b.headerBorderColor||"#1e1e1e");s.setProperty("--header-border-opacity",b.headerBorderOpacity??0.2)}}})();`;
+
     // Inject runtime config, branding, and initial data
     html = html.replace(
       '<script type="module"',
-      `<script>window.__RUNTIME_API_URL__ = "${apiUrl}"; window.__RUNTIME_BRANDING__ = ${JSON.stringify(brandingData)}; window.__INITIAL_DATA__ = ${JSON.stringify(initialData)};</script>\n    <script type="module"`
+      `<script>${themeScript}</script>\n    <script type="module"`
     );
 
     // Add marker comment to identify pre-rendered HTML
