@@ -92,6 +92,8 @@ export default function AdminPortal() {
   const [branding, setBranding] = useState<BrandingConfig>({
     siteName: '',
     avatarPath: '',
+    headerAvatarPath: '/photos/avatar-header.webp',
+    avatarCacheBust: 0,
     primaryColor: '#4ade80',
     secondaryColor: '#22c55e',
     metaDescription: '',
@@ -406,6 +408,8 @@ export default function AdminPortal() {
       const brandingData = {
         siteName: data.siteName || '',
         avatarPath: data.avatarPath || '',
+        headerAvatarPath: data.headerAvatarPath || '/photos/avatar-header.webp',
+        avatarCacheBust: data.avatarCacheBust || 0,
         primaryColor: data.primaryColor || '#4ade80',
         secondaryColor: data.secondaryColor || '#22c55e',
         metaDescription: data.metaDescription || '',

@@ -190,9 +190,13 @@ const GeneralSection: React.FC<GeneralSectionProps> = ({
           const data = await avatarRes.json();
           info('[Avatar Upload] Success:', data);
           updatedBranding.avatarPath = data.avatarPath;
+          updatedBranding.headerAvatarPath = data.headerAvatarPath;
+          updatedBranding.avatarCacheBust = data.avatarCacheBust;
           setBranding({
             ...branding,
-            avatarPath: data.avatarPath
+            avatarPath: data.avatarPath,
+            headerAvatarPath: data.headerAvatarPath,
+            avatarCacheBust: data.avatarCacheBust
           });
           trackAvatarUpload();
           setPendingAvatarFile(null);

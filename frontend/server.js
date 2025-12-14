@@ -15,15 +15,38 @@ const JSON_CACHE_MAX_AGE = 5 * 60 * 1000; // 5 minutes
 let homepageHTMLCache = null;
 let homepageHTMLCacheTime = 0;
 
+// In-memory cache for header avatar base64
+let headerAvatarBase64Cache = null;
+
 // Configuration paths and defaults
 const dataDir = process.env.DATA_DIR || path.join(__dirname, "../data");
 const configPath = path.join(dataDir, "config.json");
+const photosDir = path.join(dataDir, "photos");
 const envApiUrl = process.env.API_URL || process.env.BACKEND_DOMAIN;
 
 // Load initial configuration
 let configFile;
 let config;
 let isSetupMode = false;
+
+/**
+ * Load header avatar as base64 data URL
+ */
+function loadHeaderAvatarBase64() {
+  const headerAvatarPath = path.join(photosDir, "avatar-header.webp");
+  if (fs.existsSync(headerAvatarPath)) {
+    try {
+      const avatarBuffer = fs.readFileSync(headerAvatarPath);
+      headerAvatarBase64Cache = `data:image/webp;base64,${avatarBuffer.toString("base64")}`;
+      info("[Frontend] Header avatar loaded as base64 (" + Math.round(headerAvatarBase64Cache.length / 1024) + "KB)");
+    } catch (err) {
+      error("[Frontend] Failed to load header avatar:", err);
+      headerAvatarBase64Cache = null;
+    }
+  } else {
+    headerAvatarBase64Cache = null;
+  }
+}
 
 /**
  * Load configuration from disk
@@ -37,6 +60,9 @@ function loadConfig() {
     if (envApiUrl) {
       config.frontend.apiUrl = envApiUrl;
     }
+
+    // Reload header avatar base64 (in case avatar was updated)
+    loadHeaderAvatarBase64();
 
     info("[Frontend] Configuration reloaded");
   }
@@ -63,6 +89,14 @@ if (fs.existsSync(configPath)) {
       redirectTo: null,
     },
   };
+}
+
+/**
+ * Build inline script that applies theme immediately (before React hydrates)
+ * This prevents flash of unstyled/wrong-themed content
+ */
+function buildThemeScript(apiUrl, brandingData) {
+  return `window.__RUNTIME_API_URL__ = "${apiUrl}"; window.__RUNTIME_BRANDING__ = ${JSON.stringify(brandingData)}; (function(){var b=window.__RUNTIME_BRANDING__;if(b){document.documentElement.setAttribute("data-header-theme",b.headerTheme||"light");document.documentElement.setAttribute("data-header-dropdown-theme",b.headerDropdownTheme||"light");document.documentElement.setAttribute("data-photo-grid-theme",b.photoGridTheme||"dark");if(b.headerTheme==="custom"){var s=document.documentElement.style;s.setProperty("--header-bg-color",b.headerBackgroundColor||"#e7e7e7");s.setProperty("--header-text-color",b.headerTextColor||"#1e1e1e");s.setProperty("--header-opacity",b.headerOpacity??1);s.setProperty("--header-blur",b.headerBlur??0);s.setProperty("--header-border-color",b.headerBorderColor||"#1e1e1e");s.setProperty("--header-border-opacity",b.headerBorderOpacity??0.2)}}})();`;
 }
 
 // Watch config file for changes and reload automatically
@@ -488,17 +522,17 @@ app.get(/^\/.*/, async (req, res) => {
           const ipAddress = host.split(":")[0];
           runtimeApiUrl = `${protocol}://${ipAddress}:3001`;
         } else if (host.includes("localhost")) {
-          // Localhost development
-          runtimeApiUrl = "http://localhost:3001";
+          // Localhost development - use BACKEND_DOMAIN if set (for Docker port mapping)
+          runtimeApiUrl = process.env.BACKEND_DOMAIN || "http://localhost:3001";
         } else if (host.startsWith("www-")) {
           // Domain with www- prefix (e.g., www-dev.example.com -> api-dev.example.com)
           runtimeApiUrl = `${protocol}://api-${host.substring(4)}`;
         } else if (host.startsWith("www.")) {
           // Domain with www. prefix (e.g., www.example.com -> api.example.com)
           runtimeApiUrl = `${protocol}://api.${host.substring(4)}`;
-        } else if (process.env.BACKEND_DOMAIN || process.env.API_URL) {
+        } else if (process.env.BACKEND_DOMAIN) {
           // Fall back to environment variable if provided
-          runtimeApiUrl = process.env.BACKEND_DOMAIN || process.env.API_URL;
+          runtimeApiUrl = process.env.BACKEND_DOMAIN;
         } else if (
           !isSetupMode &&
           config.frontend.apiUrl &&
@@ -665,6 +699,9 @@ app.get(/^\/.*/, async (req, res) => {
           const brandingData = {
             siteName: configFile.branding?.siteName || "Galleria",
             avatarPath: configFile.branding?.avatarPath || "/photos/avatar.png",
+            headerAvatarPath: configFile.branding?.headerAvatarPath || "/photos/avatar-header.webp",
+            headerAvatarBase64: headerAvatarBase64Cache,
+            avatarCacheBust: configFile.branding?.avatarCacheBust || 0,
             primaryColor: configFile.branding?.primaryColor || "#4ade80",
             secondaryColor: configFile.branding?.secondaryColor || "#3b82f6",
             language: configFile.branding?.language || "en",
@@ -691,9 +728,9 @@ app.get(/^\/.*/, async (req, res) => {
 
           const htmlWithBranding = htmlWithCustomCSS.replace(
             '<script type="module"',
-            `<script>window.__RUNTIME_API_URL__ = "${apiUrl}"; window.__RUNTIME_BRANDING__ = ${JSON.stringify(brandingData)};</script>\n    <script type="module"`
+            `<script>${buildThemeScript(apiUrl, brandingData)}</script>\n    <script type="module"`
           );
-          
+
           return res.send(htmlWithBranding);
         }
       }
@@ -828,6 +865,9 @@ app.get(/^\/.*/, async (req, res) => {
           const brandingData = {
             siteName: configFile.branding?.siteName || "Galleria",
             avatarPath: configFile.branding?.avatarPath || "/photos/avatar.png",
+            headerAvatarPath: configFile.branding?.headerAvatarPath || "/photos/avatar-header.webp",
+            headerAvatarBase64: headerAvatarBase64Cache,
+            avatarCacheBust: configFile.branding?.avatarCacheBust || 0,
             primaryColor: configFile.branding?.primaryColor || "#4ade80",
             secondaryColor: configFile.branding?.secondaryColor || "#3b82f6",
             language: configFile.branding?.language || "en",
@@ -854,9 +894,9 @@ app.get(/^\/.*/, async (req, res) => {
 
           const htmlWithBranding = htmlWithCustomCSS.replace(
             '<script type="module"',
-            `<script>window.__RUNTIME_API_URL__ = "${apiUrl}"; window.__RUNTIME_BRANDING__ = ${JSON.stringify(brandingData)};</script>\n    <script type="module"`
+            `<script>${buildThemeScript(apiUrl, brandingData)}</script>\n    <script type="module"`
           );
-          
+
           return res.send(htmlWithBranding);
         }
       }
@@ -1013,6 +1053,9 @@ app.get(/^\/.*/, async (req, res) => {
           const brandingData = {
             siteName: configFile.branding?.siteName || "Galleria",
             avatarPath: configFile.branding?.avatarPath || "/photos/avatar.png",
+            headerAvatarPath: configFile.branding?.headerAvatarPath || "/photos/avatar-header.webp",
+            headerAvatarBase64: headerAvatarBase64Cache,
+            avatarCacheBust: configFile.branding?.avatarCacheBust || 0,
             primaryColor: configFile.branding?.primaryColor || "#4ade80",
             secondaryColor: configFile.branding?.secondaryColor || "#3b82f6",
             language: configFile.branding?.language || "en",
@@ -1039,9 +1082,9 @@ app.get(/^\/.*/, async (req, res) => {
 
           const htmlWithBranding = htmlWithCustomCSS.replace(
             '<script type="module"',
-            `<script>window.__RUNTIME_API_URL__ = "${apiUrl}"; window.__RUNTIME_BRANDING__ = ${JSON.stringify(brandingData)};</script>\n    <script type="module"`
+            `<script>${buildThemeScript(apiUrl, brandingData)}</script>\n    <script type="module"`
           );
-          
+
           return res.send(htmlWithBranding);
         }
       }
@@ -1077,17 +1120,17 @@ app.get(/^\/.*/, async (req, res) => {
       const ipAddress = host.split(":")[0];
       runtimeApiUrl = `${protocol}://${ipAddress}:3001`;
     } else if (host.includes("localhost")) {
-      // Localhost development
-      runtimeApiUrl = "http://localhost:3001";
+      // Localhost development - use BACKEND_DOMAIN if set (for Docker port mapping)
+      runtimeApiUrl = process.env.BACKEND_DOMAIN || "http://localhost:3001";
     } else if (host.startsWith("www-")) {
       // Domain with www- prefix (e.g., www-dev.example.com -> api-dev.example.com)
       runtimeApiUrl = `${protocol}://api-${host.substring(4)}`;
     } else if (host.startsWith("www.")) {
       // Domain with www. prefix (e.g., www.example.com -> api.example.com)
       runtimeApiUrl = `${protocol}://api.${host.substring(4)}`;
-    } else if (process.env.BACKEND_DOMAIN || process.env.API_URL) {
+    } else if (process.env.BACKEND_DOMAIN) {
       // Fall back to environment variable if provided
-      runtimeApiUrl = process.env.BACKEND_DOMAIN || process.env.API_URL;
+      runtimeApiUrl = process.env.BACKEND_DOMAIN;
     } else if (
       !isSetupMode &&
       config.frontend.apiUrl &&
@@ -1125,6 +1168,9 @@ app.get(/^\/.*/, async (req, res) => {
     const brandingData = {
       siteName: configFile.branding?.siteName || "Galleria",
       avatarPath: configFile.branding?.avatarPath || "/photos/avatar.png",
+      headerAvatarPath: configFile.branding?.headerAvatarPath || "/photos/avatar-header.webp",
+      headerAvatarBase64: headerAvatarBase64Cache,
+      avatarCacheBust: configFile.branding?.avatarCacheBust || 0,
       primaryColor: configFile.branding?.primaryColor || "#4ade80",
       secondaryColor: configFile.branding?.secondaryColor || "#3b82f6",
       language: configFile.branding?.language || "en",
@@ -1150,7 +1196,7 @@ app.get(/^\/.*/, async (req, res) => {
 
     modifiedHtml = modifiedHtml.replace(
       '<script type="module"',
-      `<script>window.__RUNTIME_API_URL__ = "${runtimeApiUrl}"; window.__RUNTIME_BRANDING__ = ${JSON.stringify(brandingData)};</script>\n    <script type="module"`
+      `<script>${buildThemeScript(runtimeApiUrl, brandingData)}</script>\n    <script type="module"`
     );
 
     res.send(modifiedHtml);

@@ -50,7 +50,8 @@ interface HeaderProps {
   externalLinks: ExternalLink[];
   currentAlbum?: string;
   siteName: string;
-  avatarPath: string;
+  headerAvatarPath: string;
+  headerAvatarBase64?: string | null;
   avatarCacheBust: number;
 }
 
@@ -551,21 +552,17 @@ export default function Header({
   externalLinks,
   currentAlbum,
   siteName,
-  avatarPath,
+  headerAvatarPath,
+  headerAvatarBase64,
   avatarCacheBust,
 }: HeaderProps) {
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [avatarLoaded, setAvatarLoaded] = useState(false);
-  const hasLoadedOnce = useRef(false);
 
-  // Track when avatar loads for the first time
-  const handleAvatarLoad = () => {
-    setAvatarLoaded(true);
-    hasLoadedOnce.current = true;
-  };
+  // Use base64 inline avatar if available, otherwise fall back to URL
+  const avatarSrc = headerAvatarBase64 || `${API_URL}${headerAvatarPath}?v=${avatarCacheBust}`;
 
   // Check if user is authenticated
   useEffect(() => {
@@ -609,7 +606,7 @@ export default function Header({
   };
 
   return (
-    <header className={`header ${hasLoadedOnce.current || avatarLoaded ? 'header-visible' : ''}`}>
+    <header className="header">
       <div className="header-left">
         {/* Logout button - only shown when authenticated and NOT in admin panel */}
         {isAuthenticated && !isInAdminPanel && (
@@ -623,11 +620,9 @@ export default function Header({
         )}
         <Link to="/">
           <img
-            src={`${API_URL}${avatarPath}?v=${avatarCacheBust}`}
+            src={avatarSrc}
             alt={siteName}
             className="avatar"
-            onLoad={handleAvatarLoad}
-            onError={handleAvatarLoad} // Show even on error to avoid permanent blank
           />
           <h1 className="header-title">{siteName}</h1>
         </Link>

@@ -56,8 +56,9 @@ export default function SharedAlbum() {
   const [messages, setMessages] = useState<ToastMessage[]>([]);
   const [timeRemaining, setTimeRemaining] = useState<string>('');
   const [siteName, setSiteName] = useState<string>('');
-  const [avatarPath, setAvatarPath] = useState<string>('');
-  const [avatarCacheBust, setAvatarCacheBust] = useState<number>(Date.now());
+  const [headerAvatarPath, setHeaderAvatarPath] = useState<string>('/photos/avatar-header.webp');
+  const [headerAvatarBase64, setHeaderAvatarBase64] = useState<string | null>(null);
+  const [avatarCacheBust, setAvatarCacheBust] = useState<number>(0);
   const [albums, setAlbums] = useState<string[]>([]);
   const [externalLinks, setExternalLinks] = useState<ExternalLink[]>([]);
   
@@ -94,8 +95,9 @@ export default function SharedAlbum() {
         if (brandingResponse.ok) {
           const branding = await brandingResponse.json();
           setSiteName(branding.siteName);
-          setAvatarPath(branding.avatarPath);
-          setAvatarCacheBust(branding.avatarCacheBust);
+          setHeaderAvatarPath(branding.headerAvatarPath || '/photos/avatar-header.webp');
+          setHeaderAvatarBase64(branding.headerAvatarBase64 || null);
+          setAvatarCacheBust(branding.avatarCacheBust || 0);
         }
 
         // Handle albums
@@ -288,12 +290,13 @@ export default function SharedAlbum() {
 
   return (
     <>
-      <Header 
-        albums={albums} 
-        externalLinks={externalLinks} 
+      <Header
+        albums={albums}
+        externalLinks={externalLinks}
         currentAlbum={albumName}
         siteName={siteName}
-        avatarPath={avatarPath}
+        headerAvatarPath={headerAvatarPath}
+        headerAvatarBase64={headerAvatarBase64}
         avatarCacheBust={avatarCacheBust}
       />
       <main className="main-content">

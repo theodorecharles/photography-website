@@ -20,6 +20,7 @@ const dataDir = path.join(projectRoot, 'data');
 const frontendDistDir = path.join(projectRoot, 'frontend', 'dist');
 const configPath = path.join(dataDir, 'config.json');
 const dbPath = path.join(dataDir, 'gallery.db');
+const photosDir = path.join(dataDir, 'photos');
 const homepageJsonPath = path.join(frontendDistDir, 'albums-data', 'homepage.json');
 const indexHtmlPath = path.join(frontendDistDir, 'index.html');
 const outputPath = path.join(frontendDistDir, 'homepage-prerendered.html');
@@ -242,10 +243,26 @@ async function generateHomepageHtml() {
     
     success(`Added cache buster to favicon/icon links: v=${cacheBuster}`);
 
+    // Load header avatar as base64 for instant display
+    let headerAvatarBase64 = null;
+    const headerAvatarFilePath = path.join(photosDir, 'avatar-header.webp');
+    if (fs.existsSync(headerAvatarFilePath)) {
+      try {
+        const avatarBuffer = fs.readFileSync(headerAvatarFilePath);
+        headerAvatarBase64 = `data:image/webp;base64,${avatarBuffer.toString('base64')}`;
+        success(`Loaded header avatar as base64 (${Math.round(headerAvatarBase64.length / 1024)}KB)`);
+      } catch (err) {
+        warn(`Failed to load header avatar: ${err.message}`);
+      }
+    }
+
     // Build branding data
     const brandingData = {
       siteName: config.branding?.siteName || "Galleria",
       avatarPath: config.branding?.avatarPath || "/photos/avatar.png",
+      headerAvatarPath: config.branding?.headerAvatarPath || "/photos/avatar-header.webp",
+      headerAvatarBase64: headerAvatarBase64,
+      avatarCacheBust: config.branding?.avatarCacheBust || 0,
       primaryColor: config.branding?.primaryColor || "#4ade80",
       secondaryColor: config.branding?.secondaryColor || "#3b82f6",
       language: config.branding?.language || "en",
@@ -276,10 +293,13 @@ async function generateHomepageHtml() {
       externalLinks: externalLinksData,
     };
 
+    // Build inline script that applies theme immediately (before React hydrates)
+    const themeScript = `window.__RUNTIME_API_URL__ = "${apiUrl}"; window.__RUNTIME_BRANDING__ = ${JSON.stringify(brandingData)}; window.__INITIAL_DATA__ = ${JSON.stringify(initialData)}; (function(){var b=window.__RUNTIME_BRANDING__;if(b){document.documentElement.setAttribute("data-header-theme",b.headerTheme||"light");document.documentElement.setAttribute("data-header-dropdown-theme",b.headerDropdownTheme||"light");document.documentElement.setAttribute("data-photo-grid-theme",b.photoGridTheme||"dark");if(b.headerTheme==="custom"){var s=document.documentElement.style;s.setProperty("--header-bg-color",b.headerBackgroundColor||"#e7e7e7");s.setProperty("--header-text-color",b.headerTextColor||"#1e1e1e");s.setProperty("--header-opacity",b.headerOpacity??1);s.setProperty("--header-blur",b.headerBlur??0);s.setProperty("--header-border-color",b.headerBorderColor||"#1e1e1e");s.setProperty("--header-border-opacity",b.headerBorderOpacity??0.2)}}})();`;
+
     // Inject runtime config, branding, and initial data
     html = html.replace(
       '<script type="module"',
-      `<script>window.__RUNTIME_API_URL__ = "${apiUrl}"; window.__RUNTIME_BRANDING__ = ${JSON.stringify(brandingData)}; window.__INITIAL_DATA__ = ${JSON.stringify(initialData)};</script>\n    <script type="module"`
+      `<script>${themeScript}</script>\n    <script type="module"`
     );
 
     // Add marker comment to identify pre-rendered HTML

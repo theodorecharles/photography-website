@@ -208,20 +208,62 @@ function RateLimitError() {
  */
 function App() {
   const { t } = useTranslation();
-  // Application state
+
+  // Read initial data from SSR (server-rendered) for instant load - no waiting for fetchData
+  const initialData = (window as any).__INITIAL_DATA__;
+  const runtimeBranding = (window as any).__RUNTIME_BRANDING__;
+
+  // Parse initial albums data synchronously for instant render
+  const getInitialAlbums = () => {
+    if (!initialData?.albums) return [];
+    const albumsData = initialData.albums;
+    if (albumsData && typeof albumsData === "object" && "albums" in albumsData) {
+      // New format - filter to published only (assume not authenticated on initial load)
+      return (albumsData.albums || [])
+        .filter((a: { name: string; published?: boolean }) =>
+          a.name !== "homepage" && a.published !== false
+        );
+    }
+    // Old format
+    return Array.isArray(albumsData)
+      ? albumsData.filter((a: string | { name: string }) =>
+          typeof a === "string" ? a !== "homepage" : a.name !== "homepage"
+        )
+      : [];
+  };
+
+  const getInitialFolders = () => {
+    if (!initialData?.albums) return [];
+    const albumsData = initialData.albums;
+    if (albumsData && typeof albumsData === "object" && "folders" in albumsData) {
+      return (albumsData.folders || [])
+        .filter((f: { published?: boolean | number }) => f.published)
+        .map((f: { id: number; name: string; published: boolean | number }) =>
+          ({ ...f, published: !!f.published })
+        );
+    }
+    return [];
+  };
+
+  const getInitialExternalLinks = () => {
+    return initialData?.externalLinks?.externalLinks || [];
+  };
+
+  // Application state - initialize from SSR data for instant render
   const [albums, setAlbums] = useState<
     string[] | Array<{ name: string; folder_id?: number | null }>
-  >([]);
+  >(getInitialAlbums);
   const [folders, setFolders] = useState<
     Array<{ id: number; name: string; published: boolean }>
-  >([]);
-  const [externalLinks, setExternalLinks] = useState<ExternalLink[]>([]);
-  
+  >(getInitialFolders);
+  const [externalLinks, setExternalLinks] = useState<ExternalLink[]>(getInitialExternalLinks);
+
   // Read branding from injected runtime config (server-rendered) for instant load
-  const runtimeBranding = (window as any).__RUNTIME_BRANDING__;
   const [siteName, setSiteName] = useState(runtimeBranding?.siteName || "Galleria");
   const [avatarPath, setAvatarPath] = useState(runtimeBranding?.avatarPath || "/photos/avatar.png");
-  const [avatarCacheBust, setAvatarCacheBust] = useState(Date.now());
+  const [headerAvatarPath] = useState(runtimeBranding?.headerAvatarPath || "/photos/avatar-header.webp");
+  const [headerAvatarBase64] = useState<string | null>(runtimeBranding?.headerAvatarBase64 || null);
+  const [avatarCacheBust, setAvatarCacheBust] = useState(runtimeBranding?.avatarCacheBust || 0);
   const [primaryColor, setPrimaryColor] = useState(runtimeBranding?.primaryColor || "#4ade80");
   const [secondaryColor, setSecondaryColor] = useState(runtimeBranding?.secondaryColor || "#3b82f6");
   const [headerTheme, setHeaderTheme] = useState<'light' | 'dark' | 'custom'>(runtimeBranding?.headerTheme || "light");
@@ -666,7 +708,8 @@ function App() {
             externalLinks={externalLinks}
             currentAlbum={undefined}
             siteName={siteName}
-            avatarPath={avatarPath}
+            headerAvatarPath={headerAvatarPath}
+            headerAvatarBase64={headerAvatarBase64}
             avatarCacheBust={avatarCacheBust}
           />
           <main className="main-content">
@@ -742,7 +785,8 @@ function App() {
         externalLinks={externalLinks}
         currentAlbum={currentAlbum}
         siteName={siteName}
-        avatarPath={avatarPath}
+        headerAvatarPath={headerAvatarPath}
+        headerAvatarBase64={headerAvatarBase64}
         avatarCacheBust={avatarCacheBust}
       />
 
