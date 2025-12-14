@@ -137,6 +137,8 @@ router.put("/", requireManager, (req: Request, res: Response) => {
     const validFields = [
       "siteName",
       "avatarPath",
+      "headerAvatarPath",
+      "avatarCacheBust",
       "primaryColor",
       "secondaryColor",
       "metaDescription",
@@ -167,6 +169,11 @@ router.put("/", requireManager, (req: Request, res: Response) => {
       if (key === "shuffleHomepage" || key === "enableAnimatedBackground") {
         if (typeof value !== "boolean") {
           res.status(400).json({ error: `Field ${key} must be a boolean` });
+          return;
+        }
+      } else if (key === "avatarCacheBust") {
+        if (typeof value !== "number") {
+          res.status(400).json({ error: "avatarCacheBust must be a number" });
           return;
         }
       } else if (key === "headerOpacity") {
