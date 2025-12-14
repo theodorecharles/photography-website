@@ -222,6 +222,7 @@ function App() {
   const [siteName, setSiteName] = useState(runtimeBranding?.siteName || "Galleria");
   const [avatarPath, setAvatarPath] = useState(runtimeBranding?.avatarPath || "/photos/avatar.png");
   const [headerAvatarPath] = useState(runtimeBranding?.headerAvatarPath || "/photos/avatar-header.webp");
+  const [headerAvatarBase64] = useState<string | null>(runtimeBranding?.headerAvatarBase64 || null);
   const [avatarCacheBust, setAvatarCacheBust] = useState(runtimeBranding?.avatarCacheBust || 0);
   const [primaryColor, setPrimaryColor] = useState(runtimeBranding?.primaryColor || "#4ade80");
   const [secondaryColor, setSecondaryColor] = useState(runtimeBranding?.secondaryColor || "#3b82f6");
@@ -668,6 +669,7 @@ function App() {
             currentAlbum={undefined}
             siteName={siteName}
             headerAvatarPath={headerAvatarPath}
+            headerAvatarBase64={headerAvatarBase64}
             avatarCacheBust={avatarCacheBust}
           />
           <main className="main-content">
@@ -744,6 +746,7 @@ function App() {
         currentAlbum={currentAlbum}
         siteName={siteName}
         headerAvatarPath={headerAvatarPath}
+        headerAvatarBase64={headerAvatarBase64}
         avatarCacheBust={avatarCacheBust}
       />
 

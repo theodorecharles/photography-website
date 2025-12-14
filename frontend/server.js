@@ -15,15 +15,38 @@ const JSON_CACHE_MAX_AGE = 5 * 60 * 1000; // 5 minutes
 let homepageHTMLCache = null;
 let homepageHTMLCacheTime = 0;
 
+// In-memory cache for header avatar base64
+let headerAvatarBase64Cache = null;
+
 // Configuration paths and defaults
 const dataDir = process.env.DATA_DIR || path.join(__dirname, "../data");
 const configPath = path.join(dataDir, "config.json");
+const photosDir = path.join(dataDir, "photos");
 const envApiUrl = process.env.API_URL || process.env.BACKEND_DOMAIN;
 
 // Load initial configuration
 let configFile;
 let config;
 let isSetupMode = false;
+
+/**
+ * Load header avatar as base64 data URL
+ */
+function loadHeaderAvatarBase64() {
+  const headerAvatarPath = path.join(photosDir, "avatar-header.webp");
+  if (fs.existsSync(headerAvatarPath)) {
+    try {
+      const avatarBuffer = fs.readFileSync(headerAvatarPath);
+      headerAvatarBase64Cache = `data:image/webp;base64,${avatarBuffer.toString("base64")}`;
+      info("[Frontend] Header avatar loaded as base64 (" + Math.round(headerAvatarBase64Cache.length / 1024) + "KB)");
+    } catch (err) {
+      error("[Frontend] Failed to load header avatar:", err);
+      headerAvatarBase64Cache = null;
+    }
+  } else {
+    headerAvatarBase64Cache = null;
+  }
+}
 
 /**
  * Load configuration from disk
@@ -37,6 +60,9 @@ function loadConfig() {
     if (envApiUrl) {
       config.frontend.apiUrl = envApiUrl;
     }
+
+    // Reload header avatar base64 (in case avatar was updated)
+    loadHeaderAvatarBase64();
 
     info("[Frontend] Configuration reloaded");
   }
@@ -674,6 +700,7 @@ app.get(/^\/.*/, async (req, res) => {
             siteName: configFile.branding?.siteName || "Galleria",
             avatarPath: configFile.branding?.avatarPath || "/photos/avatar.png",
             headerAvatarPath: configFile.branding?.headerAvatarPath || "/photos/avatar-header.webp",
+            headerAvatarBase64: headerAvatarBase64Cache,
             avatarCacheBust: configFile.branding?.avatarCacheBust || 0,
             primaryColor: configFile.branding?.primaryColor || "#4ade80",
             secondaryColor: configFile.branding?.secondaryColor || "#3b82f6",
@@ -839,6 +866,7 @@ app.get(/^\/.*/, async (req, res) => {
             siteName: configFile.branding?.siteName || "Galleria",
             avatarPath: configFile.branding?.avatarPath || "/photos/avatar.png",
             headerAvatarPath: configFile.branding?.headerAvatarPath || "/photos/avatar-header.webp",
+            headerAvatarBase64: headerAvatarBase64Cache,
             avatarCacheBust: configFile.branding?.avatarCacheBust || 0,
             primaryColor: configFile.branding?.primaryColor || "#4ade80",
             secondaryColor: configFile.branding?.secondaryColor || "#3b82f6",
@@ -1026,6 +1054,7 @@ app.get(/^\/.*/, async (req, res) => {
             siteName: configFile.branding?.siteName || "Galleria",
             avatarPath: configFile.branding?.avatarPath || "/photos/avatar.png",
             headerAvatarPath: configFile.branding?.headerAvatarPath || "/photos/avatar-header.webp",
+            headerAvatarBase64: headerAvatarBase64Cache,
             avatarCacheBust: configFile.branding?.avatarCacheBust || 0,
             primaryColor: configFile.branding?.primaryColor || "#4ade80",
             secondaryColor: configFile.branding?.secondaryColor || "#3b82f6",
@@ -1140,6 +1169,7 @@ app.get(/^\/.*/, async (req, res) => {
       siteName: configFile.branding?.siteName || "Galleria",
       avatarPath: configFile.branding?.avatarPath || "/photos/avatar.png",
       headerAvatarPath: configFile.branding?.headerAvatarPath || "/photos/avatar-header.webp",
+      headerAvatarBase64: headerAvatarBase64Cache,
       avatarCacheBust: configFile.branding?.avatarCacheBust || 0,
       primaryColor: configFile.branding?.primaryColor || "#4ade80",
       secondaryColor: configFile.branding?.secondaryColor || "#3b82f6",

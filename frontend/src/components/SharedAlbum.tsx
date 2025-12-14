@@ -57,6 +57,7 @@ export default function SharedAlbum() {
   const [timeRemaining, setTimeRemaining] = useState<string>('');
   const [siteName, setSiteName] = useState<string>('');
   const [headerAvatarPath, setHeaderAvatarPath] = useState<string>('/photos/avatar-header.webp');
+  const [headerAvatarBase64, setHeaderAvatarBase64] = useState<string | null>(null);
   const [avatarCacheBust, setAvatarCacheBust] = useState<number>(0);
   const [albums, setAlbums] = useState<string[]>([]);
   const [externalLinks, setExternalLinks] = useState<ExternalLink[]>([]);
@@ -95,6 +96,7 @@ export default function SharedAlbum() {
           const branding = await brandingResponse.json();
           setSiteName(branding.siteName);
           setHeaderAvatarPath(branding.headerAvatarPath || '/photos/avatar-header.webp');
+          setHeaderAvatarBase64(branding.headerAvatarBase64 || null);
           setAvatarCacheBust(branding.avatarCacheBust || 0);
         }
 
@@ -294,6 +296,7 @@ export default function SharedAlbum() {
         currentAlbum={albumName}
         siteName={siteName}
         headerAvatarPath={headerAvatarPath}
+        headerAvatarBase64={headerAvatarBase64}
         avatarCacheBust={avatarCacheBust}
       />
       <main className="main-content">

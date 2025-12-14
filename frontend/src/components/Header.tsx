@@ -51,6 +51,7 @@ interface HeaderProps {
   currentAlbum?: string;
   siteName: string;
   headerAvatarPath: string;
+  headerAvatarBase64?: string | null;
   avatarCacheBust: number;
 }
 
@@ -552,12 +553,16 @@ export default function Header({
   currentAlbum,
   siteName,
   headerAvatarPath,
+  headerAvatarBase64,
   avatarCacheBust,
 }: HeaderProps) {
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  // Use base64 inline avatar if available, otherwise fall back to URL
+  const avatarSrc = headerAvatarBase64 || `${API_URL}${headerAvatarPath}?v=${avatarCacheBust}`;
 
   // Check if user is authenticated
   useEffect(() => {
@@ -615,7 +620,7 @@ export default function Header({
         )}
         <Link to="/">
           <img
-            src={`${API_URL}${headerAvatarPath}?v=${avatarCacheBust}`}
+            src={avatarSrc}
             alt={siteName}
             className="avatar"
           />

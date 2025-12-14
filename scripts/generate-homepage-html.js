@@ -20,6 +20,7 @@ const dataDir = path.join(projectRoot, 'data');
 const frontendDistDir = path.join(projectRoot, 'frontend', 'dist');
 const configPath = path.join(dataDir, 'config.json');
 const dbPath = path.join(dataDir, 'gallery.db');
+const photosDir = path.join(dataDir, 'photos');
 const homepageJsonPath = path.join(frontendDistDir, 'albums-data', 'homepage.json');
 const indexHtmlPath = path.join(frontendDistDir, 'index.html');
 const outputPath = path.join(frontendDistDir, 'homepage-prerendered.html');
@@ -242,11 +243,25 @@ async function generateHomepageHtml() {
     
     success(`Added cache buster to favicon/icon links: v=${cacheBuster}`);
 
+    // Load header avatar as base64 for instant display
+    let headerAvatarBase64 = null;
+    const headerAvatarFilePath = path.join(photosDir, 'avatar-header.webp');
+    if (fs.existsSync(headerAvatarFilePath)) {
+      try {
+        const avatarBuffer = fs.readFileSync(headerAvatarFilePath);
+        headerAvatarBase64 = `data:image/webp;base64,${avatarBuffer.toString('base64')}`;
+        success(`Loaded header avatar as base64 (${Math.round(headerAvatarBase64.length / 1024)}KB)`);
+      } catch (err) {
+        warn(`Failed to load header avatar: ${err.message}`);
+      }
+    }
+
     // Build branding data
     const brandingData = {
       siteName: config.branding?.siteName || "Galleria",
       avatarPath: config.branding?.avatarPath || "/photos/avatar.png",
       headerAvatarPath: config.branding?.headerAvatarPath || "/photos/avatar-header.webp",
+      headerAvatarBase64: headerAvatarBase64,
       avatarCacheBust: config.branding?.avatarCacheBust || 0,
       primaryColor: config.branding?.primaryColor || "#4ade80",
       secondaryColor: config.branding?.secondaryColor || "#3b82f6",
