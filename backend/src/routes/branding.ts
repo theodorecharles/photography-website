@@ -58,6 +58,8 @@ info("[Branding Routes] __dirname is:", __dirname);
 interface BrandingConfig {
   siteName: string;
   avatarPath: string;
+  headerAvatarPath: string;
+  avatarCacheBust: number;
   primaryColor: string;
   secondaryColor: string;
   metaDescription: string;
@@ -90,6 +92,8 @@ router.get("/", (req: Request, res: Response) => {
     const brandingConfig: BrandingConfig = {
       siteName: branding.siteName || "Galleria",
       avatarPath: branding.avatarPath || "/photos/avatar.png",
+      headerAvatarPath: branding.headerAvatarPath || "/photos/avatar-header.webp",
+      avatarCacheBust: branding.avatarCacheBust || 0,
       primaryColor: branding.primaryColor || "#4ade80",
       secondaryColor: branding.secondaryColor || "#22c55e",
       metaDescription: branding.metaDescription || "Galleria",
@@ -405,18 +409,27 @@ router.post(
 
       // Use .png extension for consistency
       const avatarFilename = "avatar.png";
+      const headerAvatarFilename = "avatar-header.webp";
       const avatarPath = path.join(photosDir, avatarFilename);
+      const headerAvatarPath = path.join(photosDir, headerAvatarFilename);
       const faviconPngPath = path.join(iconsDir, "favicon.png");
       const faviconIcoPath = path.join(iconsDir, "favicon.ico");
 
       // Use Sharp to process the avatar image
       try {
-        // Process and save avatar.png with auto-rotation based on EXIF
+        // Process and save avatar.png (512x512) for settings page display
         await sharp(file.path)
           .rotate() // Auto-rotate based on EXIF orientation
           .resize(512, 512, { fit: "cover" })
           .png()
           .toFile(avatarPath);
+
+        // Generate header avatar (80x80 WebP) for fast header loading
+        await sharp(file.path)
+          .rotate()
+          .resize(80, 80, { fit: "cover" })
+          .webp({ quality: 85 })
+          .toFile(headerAvatarPath);
 
         // Update icon files so they stay in sync with avatar
         const icon192Path = path.join(iconsDir, "icon-192.png");
@@ -458,7 +471,7 @@ router.post(
           .toFormat("png")
           .toFile(faviconIcoPath);
 
-        info("[Avatar Upload] Generated avatar.png, icon files, and favicons to data/icons/");
+        info("[Avatar Upload] Generated avatar.png, avatar-header.webp, icon files, and favicons");
       } catch (err: any) {
         error("[Avatar Upload] Failed to process avatar with Sharp:", err);
         res.status(500).json({ error: "Failed to process avatar image" });
@@ -473,7 +486,10 @@ router.post(
       if (!config.branding) {
         config.branding = {};
       }
+      const cacheBust = Date.now();
       config.branding.avatarPath = `/photos/${avatarFilename}`;
+      config.branding.headerAvatarPath = `/photos/${headerAvatarFilename}`;
+      config.branding.avatarCacheBust = cacheBust;
       config.branding.faviconPath = "/favicon.ico";
 
       // Write synchronously and force flush to disk
@@ -503,6 +519,8 @@ router.post(
       res.json({
         success: true,
         avatarPath: `/photos/${avatarFilename}`,
+        headerAvatarPath: `/photos/${headerAvatarFilename}`,
+        avatarCacheBust: cacheBust,
         faviconPath: "/favicon.ico",
       });
     } catch (err) {

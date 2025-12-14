@@ -483,16 +483,41 @@ if (!isProduction) {
 
 // DO NOT serve original photos - only optimized versions should be accessible
 // Original photos are kept private and only optimized versions are served via /optimized
-// Exception: Serve avatar.png for branding
+// Exception: Serve avatar files for branding (cache busted via query param)
 app.get("/photos/avatar.png", (req: Request, res: Response) => {
   const avatarPath = path.join(photosDir, "avatar.png");
   if (fs.existsSync(avatarPath)) {
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
-    res.setHeader("Cache-Control", "public, max-age=3600");
+    // Immutable caching - cache bust is handled via ?v= query param
+    res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
     res.sendFile(avatarPath);
   } else {
     res.status(404).json({ error: "Avatar not found" });
+  }
+});
+
+// Serve optimized header avatar (80x80 WebP for fast header loading)
+app.get("/photos/avatar-header.webp", (req: Request, res: Response) => {
+  const headerAvatarPath = path.join(photosDir, "avatar-header.webp");
+  if (fs.existsSync(headerAvatarPath)) {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+    res.setHeader("Content-Type", "image/webp");
+    // Immutable caching - cache bust is handled via ?v= query param
+    res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+    res.sendFile(headerAvatarPath);
+  } else {
+    // Fall back to full avatar if header version doesn't exist
+    const avatarPath = path.join(photosDir, "avatar.png");
+    if (fs.existsSync(avatarPath)) {
+      res.setHeader("Access-Control-Allow-Origin", "*");
+      res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+      res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+      res.sendFile(avatarPath);
+    } else {
+      res.status(404).json({ error: "Avatar not found" });
+    }
   }
 });
 

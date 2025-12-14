@@ -665,6 +665,8 @@ app.get(/^\/.*/, async (req, res) => {
           const brandingData = {
             siteName: configFile.branding?.siteName || "Galleria",
             avatarPath: configFile.branding?.avatarPath || "/photos/avatar.png",
+            headerAvatarPath: configFile.branding?.headerAvatarPath || "/photos/avatar-header.webp",
+            avatarCacheBust: configFile.branding?.avatarCacheBust || 0,
             primaryColor: configFile.branding?.primaryColor || "#4ade80",
             secondaryColor: configFile.branding?.secondaryColor || "#3b82f6",
             language: configFile.branding?.language || "en",
@@ -693,7 +695,7 @@ app.get(/^\/.*/, async (req, res) => {
             '<script type="module"',
             `<script>window.__RUNTIME_API_URL__ = "${apiUrl}"; window.__RUNTIME_BRANDING__ = ${JSON.stringify(brandingData)};</script>\n    <script type="module"`
           );
-          
+
           return res.send(htmlWithBranding);
         }
       }
@@ -828,6 +830,8 @@ app.get(/^\/.*/, async (req, res) => {
           const brandingData = {
             siteName: configFile.branding?.siteName || "Galleria",
             avatarPath: configFile.branding?.avatarPath || "/photos/avatar.png",
+            headerAvatarPath: configFile.branding?.headerAvatarPath || "/photos/avatar-header.webp",
+            avatarCacheBust: configFile.branding?.avatarCacheBust || 0,
             primaryColor: configFile.branding?.primaryColor || "#4ade80",
             secondaryColor: configFile.branding?.secondaryColor || "#3b82f6",
             language: configFile.branding?.language || "en",
@@ -856,7 +860,7 @@ app.get(/^\/.*/, async (req, res) => {
             '<script type="module"',
             `<script>window.__RUNTIME_API_URL__ = "${apiUrl}"; window.__RUNTIME_BRANDING__ = ${JSON.stringify(brandingData)};</script>\n    <script type="module"`
           );
-          
+
           return res.send(htmlWithBranding);
         }
       }
@@ -1013,6 +1017,8 @@ app.get(/^\/.*/, async (req, res) => {
           const brandingData = {
             siteName: configFile.branding?.siteName || "Galleria",
             avatarPath: configFile.branding?.avatarPath || "/photos/avatar.png",
+            headerAvatarPath: configFile.branding?.headerAvatarPath || "/photos/avatar-header.webp",
+            avatarCacheBust: configFile.branding?.avatarCacheBust || 0,
             primaryColor: configFile.branding?.primaryColor || "#4ade80",
             secondaryColor: configFile.branding?.secondaryColor || "#3b82f6",
             language: configFile.branding?.language || "en",
@@ -1041,7 +1047,7 @@ app.get(/^\/.*/, async (req, res) => {
             '<script type="module"',
             `<script>window.__RUNTIME_API_URL__ = "${apiUrl}"; window.__RUNTIME_BRANDING__ = ${JSON.stringify(brandingData)};</script>\n    <script type="module"`
           );
-          
+
           return res.send(htmlWithBranding);
         }
       }
@@ -1125,6 +1131,8 @@ app.get(/^\/.*/, async (req, res) => {
     const brandingData = {
       siteName: configFile.branding?.siteName || "Galleria",
       avatarPath: configFile.branding?.avatarPath || "/photos/avatar.png",
+      headerAvatarPath: configFile.branding?.headerAvatarPath || "/photos/avatar-header.webp",
+      avatarCacheBust: configFile.branding?.avatarCacheBust || 0,
       primaryColor: configFile.branding?.primaryColor || "#4ade80",
       secondaryColor: configFile.branding?.secondaryColor || "#3b82f6",
       language: configFile.branding?.language || "en",

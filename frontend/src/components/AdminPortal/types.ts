@@ -26,6 +26,8 @@ export interface ExternalLink {
 export interface BrandingConfig {
   siteName: string;
   avatarPath: string;
+  headerAvatarPath: string;
+  avatarCacheBust: number;
   primaryColor: string;
   secondaryColor: string;
   metaDescription: string;

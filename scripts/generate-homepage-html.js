@@ -246,6 +246,8 @@ async function generateHomepageHtml() {
     const brandingData = {
       siteName: config.branding?.siteName || "Galleria",
       avatarPath: config.branding?.avatarPath || "/photos/avatar.png",
+      headerAvatarPath: config.branding?.headerAvatarPath || "/photos/avatar-header.webp",
+      avatarCacheBust: config.branding?.avatarCacheBust || 0,
       primaryColor: config.branding?.primaryColor || "#4ade80",
       secondaryColor: config.branding?.secondaryColor || "#3b82f6",
       language: config.branding?.language || "en",
