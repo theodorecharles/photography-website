@@ -48,7 +48,7 @@
   transform: translateX(-50%);
   width: 100%;
   max-width: 1024px;
-  height: calc(100dvh - 54px - env(safe-area-inset-top, 0px)) !important;
+  height: calc(100dvh - 54px) !important;
   background: #1a1a1a;
   border-left: 1px solid #444;
   border-right: 1px solid #444;
