@@ -5,6 +5,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import AlbumContentPanelHeader from './AlbumContentPanelHeader';
 import AlbumContentPanelGrid from './AlbumContentPanelGrid';
@@ -155,10 +156,10 @@ const AlbumContentPanel: React.FC<AlbumContentPanelProps> = ({
     };
   }, [setCloseHandler]);
 
-  return (
+  return createPortal(
     <>
       <div className={`photos-modal-backdrop ${isClosing ? 'closing' : ''}`} onClick={handleClose} />
-      <div 
+      <div
         className={`photos-modal ${isDragging ? 'drag-over' : ''} ${isClosing ? 'closing' : ''} ${hasEverDragged ? 'has-reorder-bar' : ''}`}
         onDragOver={uploadingImages.length > 0 ? undefined : onDragOver}
         onDragLeave={uploadingImages.length > 0 ? undefined : onDragLeave}
@@ -245,7 +246,8 @@ const AlbumContentPanel: React.FC<AlbumContentPanelProps> = ({
           </div>
         )}
       </div>
-    </>
+    </>,
+    document.body
   );
 };
 
