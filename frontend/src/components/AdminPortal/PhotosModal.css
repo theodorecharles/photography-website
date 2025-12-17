@@ -43,8 +43,8 @@
 
 .photos-modal {
   position: fixed;
-  top: calc(54px + env(safe-area-inset-top, 0px));
-  bottom: env(safe-area-inset-bottom, 0px);
+  top: 100px;
+  bottom: 0;
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
