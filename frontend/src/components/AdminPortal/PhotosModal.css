@@ -13,7 +13,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #00000059;
+  background-color: lime; /* DEBUG: bright color to see coverage */
   opacity: 0;
   animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   z-index: 1000;
