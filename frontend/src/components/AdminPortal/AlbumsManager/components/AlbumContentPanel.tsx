@@ -101,6 +101,15 @@ const AlbumContentPanel: React.FC<AlbumContentPanelProps> = ({
   });
   const [photoActiveId, setPhotoActiveId] = useState<string | null>(null);
   const [isClosing, setIsClosing] = useState(false);
+  const [headerHeight, setHeaderHeight] = useState(54);
+
+  // Measure actual header height on mount (accounts for safe-area-inset-top)
+  useEffect(() => {
+    const header = document.querySelector('.header') as HTMLElement;
+    if (header) {
+      setHeaderHeight(header.offsetHeight);
+    }
+  }, []);
 
   // Save viewMode preference to localStorage whenever it changes
   useEffect(() => {
@@ -158,8 +167,13 @@ const AlbumContentPanel: React.FC<AlbumContentPanelProps> = ({
   return (
     <>
       <div className={`photos-modal-backdrop ${isClosing ? 'closing' : ''}`} onClick={handleClose} />
-      <div 
+      <div
         className={`photos-modal ${isDragging ? 'drag-over' : ''} ${isClosing ? 'closing' : ''} ${hasEverDragged ? 'has-reorder-bar' : ''}`}
+        style={{
+          top: `${headerHeight}px`,
+          height: `calc(100vh - ${headerHeight}px)`,
+          maxHeight: `calc(100vh - ${headerHeight}px)`,
+        }}
         onDragOver={uploadingImages.length > 0 ? undefined : onDragOver}
         onDragLeave={uploadingImages.length > 0 ? undefined : onDragLeave}
         onDrop={uploadingImages.length > 0 ? undefined : onDrop}
